@@ -1,0 +1,3 @@
+restricted rows: 6521
+violations: 77  (chosen 0, rejected 77)  = 1.18%
+dropped 77 rows -> 14923 remain

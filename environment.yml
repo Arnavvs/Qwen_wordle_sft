@@ -1,0 +1,12 @@
+name: wordle
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy          # the only hard dependency of the solver itself
+  - pytest         # test suite
+  # Optional — notebook exploration and plots only; the solver never imports these.
+  - pandas
+  - matplotlib
+  - jupyter
+  - ipykernel

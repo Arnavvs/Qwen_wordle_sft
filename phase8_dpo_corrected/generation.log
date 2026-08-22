@@ -1,0 +1,6 @@
+Corrected Phase-8 DPO generator
+seed=20260821 strict_answer_partition=False
+source answers: train=2069 val=246
+quotas: train={'2-10': 60, '11-100': 12, '100+': 3} val={'2-10': 10, '11-100': 2, '100+': 1}
+wrote train=75 validation=13 in 43.7s
+{"train": {"100+": 3, "11-100": 12, "2-10": 60}, "validation": {"100+": 1, "11-100": 2, "2-10": 10}}

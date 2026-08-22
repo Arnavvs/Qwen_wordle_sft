@@ -1,0 +1,296 @@
+{
+  "answer": "TRIBE",
+  "puzzle": "1885",
+  "date": "2026-08-17",
+  "vocab": {
+    "answers": 2315,
+    "guesses": 12972
+  },
+  "seed": 20260817,
+  "start_bits": 11.177,
+  "results": [
+    {
+      "solver": "random",
+      "opener": "AWOKE",
+      "solved": true,
+      "n_guesses": 4,
+      "score": 4,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "AWOKE",
+          "pattern": "BBBBG",
+          "remaining": 153,
+          "bits": 7.257
+        },
+        {
+          "n": 2,
+          "guess": "PULSE",
+          "pattern": "BBBBG",
+          "remaining": 39,
+          "bits": 5.285
+        },
+        {
+          "n": 3,
+          "guess": "BRINE",
+          "pattern": "YGGBG",
+          "remaining": 1,
+          "bits": 0.0
+        },
+        {
+          "n": 4,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 0.0002,
+      "deterministic": false
+    },
+    {
+      "solver": "frequency",
+      "opener": "STARE",
+      "solved": true,
+      "n_guesses": 4,
+      "score": 4,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "STARE",
+          "pattern": "BYBYG",
+          "remaining": 13,
+          "bits": 3.7
+        },
+        {
+          "n": 2,
+          "guess": "TRICE",
+          "pattern": "GGGBG",
+          "remaining": 3,
+          "bits": 1.585
+        },
+        {
+          "n": 3,
+          "guess": "TRIPE",
+          "pattern": "GGGBG",
+          "remaining": 2,
+          "bits": 1.0
+        },
+        {
+          "n": 4,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 0.0002,
+      "deterministic": true
+    },
+    {
+      "solver": "entropy",
+      "opener": "SOARE",
+      "solved": true,
+      "n_guesses": 3,
+      "score": 3,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "SOARE",
+          "pattern": "BBBYG",
+          "remaining": 39,
+          "bits": 5.285
+        },
+        {
+          "n": 2,
+          "guess": "PUDIC",
+          "pattern": "BBBYB",
+          "remaining": 7,
+          "bits": 2.807
+        },
+        {
+          "n": 3,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 0.1271,
+      "deterministic": true
+    },
+    {
+      "solver": "expected",
+      "opener": "ROATE",
+      "solved": true,
+      "n_guesses": 3,
+      "score": 3,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "ROATE",
+          "pattern": "YBBYG",
+          "remaining": 7,
+          "bits": 2.807
+        },
+        {
+          "n": 2,
+          "guess": "BICES",
+          "pattern": "YYBYB",
+          "remaining": 1,
+          "bits": 0.0
+        },
+        {
+          "n": 3,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 0.0563,
+      "deterministic": true
+    },
+    {
+      "solver": "minimax",
+      "opener": "ARISE",
+      "solved": true,
+      "n_guesses": 3,
+      "score": 3,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "ARISE",
+          "pattern": "BGGBG",
+          "remaining": 17,
+          "bits": 4.087
+        },
+        {
+          "n": 2,
+          "guess": "BUMPH",
+          "pattern": "YBBBB",
+          "remaining": 1,
+          "bits": 0.0
+        },
+        {
+          "n": 3,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 0.0581,
+      "deterministic": true
+    },
+    {
+      "solver": "hybrid",
+      "opener": "RAISE",
+      "solved": true,
+      "n_guesses": 4,
+      "score": 4,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "RAISE",
+          "pattern": "YBGBG",
+          "remaining": 17,
+          "bits": 4.087
+        },
+        {
+          "n": 2,
+          "guess": "DEMPT",
+          "pattern": "BYBBY",
+          "remaining": 4,
+          "bits": 2.0
+        },
+        {
+          "n": 3,
+          "guess": "BATTA",
+          "pattern": "YBYBB",
+          "remaining": 1,
+          "bits": 0.0
+        },
+        {
+          "n": 4,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 0.1167,
+      "deterministic": true
+    },
+    {
+      "solver": "tree depth-2 (SOARE)",
+      "opener": "SOARE",
+      "solved": true,
+      "n_guesses": 3,
+      "score": 3,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "SOARE",
+          "pattern": "BBBYG",
+          "remaining": 39,
+          "bits": 5.285
+        },
+        {
+          "n": 2,
+          "guess": "PUDIC",
+          "pattern": "BBBYB",
+          "remaining": 7,
+          "bits": 2.807
+        },
+        {
+          "n": 3,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 1.6982,
+      "deterministic": true,
+      "nodes": 311,
+      "cache": 932,
+      "regime": "PRUNED (top_k=100, endgame_top_k=60 below |S|<=10, depth=2); opener=soare -- optimal only within the searched pool, NOT proven optimal"
+    },
+    {
+      "solver": "tree (SALET)",
+      "opener": "SALET",
+      "solved": true,
+      "n_guesses": 3,
+      "score": 3,
+      "steps": [
+        {
+          "n": 1,
+          "guess": "SALET",
+          "pattern": "BBBYY",
+          "remaining": 52,
+          "bits": 5.7
+        },
+        {
+          "n": 2,
+          "guess": "TRITE",
+          "pattern": "GGGBG",
+          "remaining": 3,
+          "bits": 1.585
+        },
+        {
+          "n": 3,
+          "guess": "TRIBE",
+          "pattern": "GGGGG",
+          "remaining": 1,
+          "bits": 0.0
+        }
+      ],
+      "seconds": 1.845,
+      "deterministic": true,
+      "nodes": 916,
+      "cache": 916,
+      "regime": "PRUNED (top_k=100, endgame_top_k=60 below |S|<=10, depth=6); opener=salet -- optimal only within the searched pool, NOT proven optimal"
+    }
+  ]
+}

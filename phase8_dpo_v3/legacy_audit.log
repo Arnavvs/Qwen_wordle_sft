@@ -1,0 +1,127 @@
+
+========================================================================
+PHASE-8 v1 AUDIT — 14923 rows from sft_package/data/dpo_midgame/train.jsonl
+========================================================================
+re-derived 9893 distinct states from their prompts in 67s
+
+========================================================================
+1. DUPLICATION
+========================================================================
+  rows                       14923
+  distinct_states            9893
+  distinct_triples           14923
+  distinct_ids               13056
+  duplicate_id_rows          1867
+  max_rows_one_state         177
+  rows_in_repeated_states    6668
+
+  the five most repeated states:
+     177 rows  turn 2  |adm|= 865 |cand|= 221  salet:BBBBB
+     159 rows  turn 2  |adm|= 715 |cand|= 165  salet:BBBYB
+     148 rows  turn 2  |adm|= 583 |cand|= 102  salet:BYBBB
+     135 rows  turn 2  |adm|= 269 |cand|=  86  salet:BBBBY
+     131 rows  turn 2  |adm|= 263 |cand|=  99  salet:BBYBB
+
+  NOTE: v1's dedup key is (prompt, rejected), and `rejected` is
+  re-randomised on every visit, so a state can mint new rows forever.
+
+========================================================================
+2. STATE / METADATA CONSISTENCY  (re-derived from the prompt)
+========================================================================
+  [PASS] n_candidates     mismatches: 0
+  [PASS] n_admissible     mismatches: 0
+  [PASS] turn             mismatches: 0
+
+========================================================================
+3. ACTION VALIDITY
+========================================================================
+  [PASS] chosen_illegal                       0
+  [PASS] rejected_illegal                     0
+  [PASS] identical                            0
+  [PASS] chosen_outside_restricted_space      0
+  [PASS] rejected_outside_restricted_space    0
+
+  In the UNRESTRICTED regime (8479 rows) the `rejected` word
+  contradicts feedback already on the board in 8415/8479 rows (99.2%).
+  Those are legal actions, so this is not a validity bug — but it is
+  a triviality one: the comparison is against a word the model can
+  already rule out from its own prompt.
+
+========================================================================
+4. PAIR TYPES AND THE GAPS v1 RECORDED
+========================================================================
+  pair_type: {'clear': 9556, 'competitive': 5367}   clear = 64.0% of the dataset
+  buckets  : {'101-300': 2000, '11-30': 3424, '2-3': 1500, '300+': 1000, '31-100': 3500, '4-10': 3499}
+  turns    : {2: 3486, 3: 5233, 4: 3706, 5: 1809, 6: 689}
+  clear        n=  9556  median=   9.9772  p90=   68.5941  max=  215.0882
+  competitive  n=  5367  median=   0.5000  p90=    0.5000  max=    6.0814
+
+  overall median gap = 3.0714
+  PROJECT_README reports 3.07 as the *clear* median; 3.07 is the
+  median of ALL rows. The clear-only median is 9.9772.
+
+========================================================================
+5. WHAT IS THE `competitive` GAP ACTUALLY MADE OF?
+========================================================================
+  competitive rows: 5367
+  (chosen_is_candidate, rejected_is_candidate): {(True, False): 4685, (False, False): 320, (True, True): 357, (False, True): 5}
+
+  Rows where chosen and rejected have IDENTICAL E[remaining],
+  i.e. the entire recorded gap is the 0.5 candidate bonus:
+      4072 / 5367  (75.9%)
+  Rows where the rejected action is STRICTLY BETTER on E[remaining]
+  and is only 'worse' because of that constant:
+      336 / 5367  (6.3%)
+
+========================================================================
+6. PREFERENCE DIRECTION UNDER v1's OWN METRIC
+========================================================================
+  [PASS] rows backwards under v1's own cost function: 0 / 14923
+  v1 has no sign bug. Its labels are self-consistent.
+
+========================================================================
+7. PREFERENCE DIRECTION UNDER AN EXACT VALUE FUNCTION  (2-10 regime)
+========================================================================
+  re-judging 4999 rows over 4872 states with the exact adaptive tree ...
+  done in 108s
+
+    chosen truly better :   4980  (99.6%)
+    exactly equal value :     19  (0.4%)
+    BACKWARDS           :      0  (0.0%)
+
+  TRUE gap, in mean further guesses:
+    all          median=1.0000  p90=5.0000
+    clear        median=1.7500  p90=4.6667  frac truly close (<=0.25): 0.0%
+    competitive  median=1.0000  p90=7.0000  frac truly close (<=0.25): 4.1%
+
+  This is the finding that matters. v1's labels point the right way,
+  but the pairs it calls `competitive` are separated by a median of a
+  FULL GUESS of real value. v1's difficulty axis does not measure
+  difficulty, so 'keep only the competitive pairs' would not have
+  selected close decisions either.
+
+========================================================================
+8. LEAKAGE
+========================================================================
+  rows whose CHOSEN action is a held-out answer   : 694
+  rows whose REJECTED action is a held-out answer : 193
+  states whose candidate set contains a held-out answer : 3507/9893 (35.4%)
+  rows in such states                                  : 7385/14923 (49.5%)
+  states whose candidates are ENTIRELY held-out answers : 0
+
+  v1 is answer-keyed at the SOURCE only: rollouts start from a train
+  answer, but nothing stops a held-out answer from surviving in the
+  candidate set, or from being the preferred action (694 rows).
+
+========================================================================
+9. SPLITS
+========================================================================
+  files in sft_package/data/dpo_midgame: ['train.jsonl']
+  meta.split values: {'train': 14923}
+
+  There is no validation file. The DPO notebook loads train.jsonl,
+  shuffles it and trains on all of it, computing `acc` per batch on
+  the batch it is training on. The reported 0.604 -> 0.836 is a
+  TRAINING accuracy; no held-out preference number exists for v1.
+
+audit written to phase8_dpo_v3/legacy_audit.json

@@ -1,0 +1,13 @@
+{
+  "name": "baseline_entropy",
+  "description": "Plain SFT on the greedy entropy policy.",
+  "seed": 20260817,
+  "dedup": false,
+  "shuffle": true,
+  "components": [
+    {
+      "source": "data/entropy/train.jsonl",
+      "repeat": 1
+    }
+  ]
+}

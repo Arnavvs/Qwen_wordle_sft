@@ -1,0 +1,35 @@
+========================================================================
+DECISION STRUCTURE — 1200 distinct reachable 2-10 states (45s)
+========================================================================
+
+CAN A PAIRWISE PREFERENCE EXPRESS THE TARGET?
+  actions available per state       median 6  mean 5.8
+  actions that are EXACTLY optimal  median 2  mean 2.45
+  states with >1 optimal action     95.3%
+  states where EVERY action is optimal (nothing to teach)  11.9%
+
+ARE THERE GENUINELY CLOSE CALLS TO TEACH?
+  gap to the best strictly-worse action, in mean further guesses:
+    median 0.5000   mean 0.7269   p25 0.3333   p75 1.0000
+      (0.000, 0.125]       2     0.2%
+      (0.125, 0.250]     201    19.0%
+      (0.250, 0.500]     533    50.4%
+      (0.500, 1.000]     205    19.4%
+      (1.000, 2.000]      40     3.8%
+      (2.000,   inf]      76     7.2%
+  strictly-worse actions within 0.5 guesses: median 1, at least one in 61.3% of states
+
+BY |admissible|
+  |adm|  2- 3  n= 246  median gap 1.000  all-tied  50.0%  >=1 near-miss(<=0.5)  20.3%
+  |adm|  4- 6  n= 476  median gap 0.500  all-tied   4.2%  >=1 near-miss(<=0.5)  60.1%
+  |adm|  7-10  n= 478  median gap 0.333  all-tied   0.0%  >=1 near-miss(<=0.5)  83.7%
+
+turn distribution: {2: 18, 3: 544, 4: 509, 5: 129}
+
+READING IT
+  The typical position is: two exactly-tied best moves, and
+  everything else a full guess worse. A pairwise preference cannot
+  represent the tie, and there is often no close call to teach.
+  That is a property of Wordle, not of any dataset.
+
+written to phase8_dpo_v3/decision_structure.json

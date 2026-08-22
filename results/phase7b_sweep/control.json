@@ -1,0 +1,52 @@
+{
+  "0": {
+    "mean": 6.9932,
+    "std": 0.0096,
+    "failure_rate_pct": 99.86
+  },
+  "2": {
+    "mean": 5.9566,
+    "std": 0.0355,
+    "failure_rate_pct": 52.03
+  },
+  "5": {
+    "mean": 5.561,
+    "std": 0.076,
+    "failure_rate_pct": 36.59
+  },
+  "10": {
+    "mean": 5.355,
+    "std": 0.0623,
+    "failure_rate_pct": 28.73
+  },
+  "20": {
+    "mean": 5.1762,
+    "std": 0.0709,
+    "failure_rate_pct": 22.76
+  },
+  "50": {
+    "mean": 5.0027,
+    "std": 0.02,
+    "failure_rate_pct": 18.16
+  },
+  "100": {
+    "mean": 4.8889,
+    "std": 0.0322,
+    "failure_rate_pct": 13.69
+  },
+  "250": {
+    "mean": 4.7222,
+    "std": 0.0649,
+    "failure_rate_pct": 10.03
+  },
+  "1000": {
+    "mean": 4.5203,
+    "std": 0.0199,
+    "failure_rate_pct": 8.67
+  },
+  "1000000000": {
+    "mean": 4.5203,
+    "std": 0.0199,
+    "failure_rate_pct": 8.67
+  }
+}

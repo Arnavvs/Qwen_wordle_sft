@@ -1,0 +1,15 @@
+14923 preference pairs
+
+A. STATE RE-DERIVES FROM ITS OWN PROMPT
+B. COST ORDERING RECOMPUTED INDEPENDENTLY
+  [PASS] history parses (2500 sampled)  0 bad
+  [PASS] re-derived |candidates| matches meta  0 bad
+  [PASS] re-derived |admissible| matches meta  0 bad
+  [PASS] cost(chosen) < cost(rejected) on all 2500 checked  0 BACKWARDS []
+
+C. PAIR VALIDITY
+  [PASS] chosen != rejected
+  [PASS] both words are legal guesses  0 illegal
+  [PASS] both words are 5 letters
+
+D. ACTION SPACE MATCHES THE DEPLOYED DECODER

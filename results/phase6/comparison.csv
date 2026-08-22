@@ -1,0 +1,5 @@
+model,adapter,ban_repeats,n_games,mean_failures_as_7,failure_rate_pct,repeated_guess_game_rate_pct,invalid_word_rate_pct,pct_le3,pct_le4,pct_le5,median,max,avg_chunks_per_decision,eval_seconds
+tree_salet_endgame [ban],tree_salet_endgame,True,246,5.4797,44.72,0.0,0.0,16.26,33.33,45.12,4.0,6,1.16,751.2
+tree_salet_endgame [noban],tree_salet_endgame,False,246,5.6992,56.1,32.11,0.0,16.26,29.67,38.21,4.0,6,1.14,756.7
+tree_salet [ban],tree_salet,True,246,5.5122,46.34,0.0,0.0,17.07,32.52,43.9,4.0,6,1.41,908.4
+tree_salet [noban],tree_salet,False,246,5.687,56.1,30.49,0.0,17.07,30.08,38.62,4.0,6,1.36,890.4

@@ -1,0 +1,14 @@
+{
+  "max_guesses": 6,
+  "strategy": "hybrid",
+  "seed": 20260817,
+  "guess_pool": "full",
+  "adaptive_threshold": 2,
+  "endgame_candidates": 2,
+  "force_candidate_on_last_guess": true,
+  "opening_guess": null,
+  "entropy_weight": 1.0,
+  "minimax_weight": 0.25,
+  "expected_weight": 0.25,
+  "answer_bonus_weight": 1.0
+}

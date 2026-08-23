@@ -171,17 +171,31 @@ SFT_ADAPTER = "tree_salet_endgame"
 
 # ---- what to run ----------------------------------------------------------
 RUN_GAMES   = True       # probe A
-RUN_FORMAT  = True       # probe B (cheap: ~2 min for all 12)
-ARMS        = ["sft", "base"]     # order matters; sft first so the baseline
-                                  # sanity-check happens in the first 10 min
+RUN_FORMAT  = True       # probe B (cheap: ~2 min for all 12) - now runs FIRST
 
-# The full 246 costs ~12x the sweep. 100 games keeps paired detection at ~0.06
-# guesses while fitting 12 variants x 2 models in one session. Set 246 for the
-# final numbers once the interesting variants are known.
-N_GAMES     = 100
-GAME_SEED   = 20260822   # which 100 of the 246; fixed so arms are comparable
+# The `base` arm is dropped. All nine of its 2026-08-22 runs landed at
+# 6.71-6.88 with 91-97% failure and a spread of 0.17: stock Qwen cannot play
+# Wordle under any prompt, so the arm cannot discriminate between prompts,
+# which was its whole job. It cost 84.5% of the session's wall time to answer
+# nothing. The lock-in confound it was meant to break is instead settled by
+# the format-crossover run (TECHNICAL.md 10C), which needs a second *trained*
+# adapter, not an untrained model.
+ARMS        = ["sft"]
 
-VARIANTS_TO_RUN = None   # None = all 12; or e.g. ["baseline","raw_history"]
+# 246 = the full held-out set. The 2026-08-22 sweep used 100 to fit 12 variants
+# x 2 arms in one session; with the base arm gone and only the variants that
+# survived, the full set fits. NOTE: the 100 are a SUBSET of the 246, so this
+# tightens precision on the same games - it is not an independent replication.
+N_GAMES     = 246
+GAME_SEED   = 20260822   # which games; fixed so runs stay comparable
+
+# The cheap follow-up session, not the full sweep. Four variants:
+#   baseline     - the control, and the gate
+#   raw_history  - the load-bearing one (+0.40, and 98/100 solved: see 8b)
+#   with_count   - LEAKY, but the cleanest null in the table
+#   few_shot     - re-measured with the rotating non-copyable exemplars
+# Set to None to run all twelve again.
+VARIANTS_TO_RUN = ["baseline", "raw_history", "with_count", "few_shot"]
 
 # ---- decoder: FIXED. This is the control, not a variable. -----------------
 ADAPTIVE_THRESHOLD = 20
@@ -371,12 +385,21 @@ code(PV_SRC + r'''
 # The few-shot exemplars are computed, but "computed" only means self-consistent
 # - it does not prove the words are playable. A worked example using an illegal
 # word teaches the model to emit illegal words, and the decoder would hide it.
-for _ans, _gs, _nxt in _SHOT_GAMES:
+for _ans, _gs, _nxt in _SHOT_POOL:
     assert _nxt.upper() in LEGAL_GUESSES, f"exemplar next-guess {_nxt!r} is not legal"
     for _g in _gs:
         assert _g.upper() in LEGAL_GUESSES, f"exemplar guess {_g!r} is not legal"
     assert all(feedback_code(_g, _nxt) == feedback_code(_g, _ans) for _g in _gs),         f"exemplar next-guess {_nxt!r} contradicts its own feedback"
-print("few-shot exemplars: legal and self-consistent")
+
+# The defect that voided the first run: two fixed exemplars made the last
+# Next-guess a constant attractor and the model opened BOOBY on every game.
+# Distinct next-guesses plus per-state rotation mean a copier can no longer
+# emit one stable word; play() measures how often it copies at all.
+_nx = [n.upper() for _, _, n in _SHOT_POOL]
+assert len(set(_nx)) == len(_nx), "exemplar next-guesses must be distinct"
+assert len(_SHOT_POOL) >= 4, "too few exemplars to rotate meaningfully"
+print(f"few-shot: {len(_SHOT_POOL)} exemplars, legal and self-consistent; "
+      f"{_N_SHOTS} shown per prompt, rotated by state")
 
 NAMES = list(VARIANTS) if VARIANTS_TO_RUN is None else list(VARIANTS_TO_RUN)
 for n in NAMES:
@@ -416,18 +439,27 @@ the same prompt always yields the same word.
 code(r'''
 class GameState:
     __slots__ = ("answer","history","cands","guesses","patterns","remaining",
-                 "forced","n_allowed","done","solved","filt","variant")
+                 "forced","n_allowed","copied","done","solved","filt","variant")
     def __init__(self, answer, variant):
         self.answer = answer; self.variant = variant
         self.filt = HardModeFilter(LEGAL_LOWER, feedback_code)
         self.history = []; self.cands = np.arange(VOCAB.n_answers, dtype=np.int32)
         self.guesses, self.patterns, self.remaining = [], [], []
-        self.forced, self.n_allowed = [], []
+        self.forced, self.n_allowed, self.copied = [], [], []
         self.done = self.solved = False
     def prompt(self, turn):
         h = [(g.lower(), p) for g, p in self.history]
         return render(self.variant, turn, h, MAX_GUESSES,
                       n_candidates=len(self.cands))
+
+def _shot_words(variant, history):
+    """Exemplar next-guesses visible in this prompt, or () for the eleven
+    variants that show none. `history` must be in the same lowercased form
+    GameState.prompt passes to render(), since the rotation hashes it."""
+    if variant != "few_shot":
+        return ()
+    h = [(g.lower(), p) for g, p in history]
+    return tuple(shot_words(h))
 
 @torch.no_grad()
 def play(model, scorer, answers, variant, threshold=ADAPTIVE_THRESHOLD,
@@ -451,6 +483,7 @@ def play(model, scorer, answers, variant, threshold=ADAPTIVE_THRESHOLD,
                 if USE_DECISION_CACHE: cache[pr] = r
             w, forced = r["word"], r["forced"]
             g.forced.append(forced); g.n_allowed.append(n_adm)
+            g.copied.append(w.upper() in _shot_words(variant, g.history))
             c = feedback_code(w.lower(), g.answer.lower())
             g.cands = BUNDLE.fb.filter_indices(g.cands, w.lower(), c)
             g.filt.refine(w.lower(), c)
@@ -481,13 +514,23 @@ def summarize(games, label, variant):
             if any(gu[i] != ch for i, ch in greens.items()): hv += 1
             seen.append((gu, pat))
     dec = [f for g in games for f in g.forced if f is not None]
+    cop = [c for g in games for c in g.copied]
     return {"arm": label, "variant": variant, "leaky": VARIANTS[variant]["leaky"],
             "n_games": n, "mean": round(sum(sc)/n, 4), "solved": len(solved),
             "failure_rate_pct": round(100*(n-len(solved))/n, 2),
             "hard_mode_violation_pct": round(100*hv/max(tv, 1), 2),
             "forced_pct": round(100*sum(1 for f in dec if f)/max(len(dec), 1), 2),
+            # >0 means the model is lifting exemplar words instead of reasoning;
+            # few_shot is only interpretable as few-shot learning near 0.
+            "shot_copy_pct": round(100*sum(cop)/max(len(cop), 1), 2),
             "opener": games[0].guesses[0] if games and games[0].guesses else None,
             "per_game": sc,
+            # Per-decision |admissible|, aligned with per_guess. Phase 8 put
+            # 74.7% of the classical gap at 2-10 admissible; without this the
+            # only question a sweep can answer is "did the mean move", not
+            # "did it move where the gap is".
+            "n_allowed": [list(g.n_allowed) for g in games],
+            "per_guess": [list(g.guesses) for g in games],
             "answers": [g.answer for g in games]}
 print("game loop ready")
 ''')
@@ -588,7 +631,147 @@ else:
 # ===========================================================================
 md(r"""
 ---
-# 8. Probe A — the sweep
+# 8. Probe B — format compliance, no decoder
+
+Same variants, decoder switched off, raw greedy generation on a fixed set of
+mid-game states. Three numbers per variant:
+
+- **legal %** — is the output a real 5-letter Wordle word at all?
+- **admissible %** — is it consistent with the feedback so far?
+- **parse %** — did the first line even look like a word?
+
+A prompt can raise admissible-% without changing the game mean (the decoder was
+already fixing it) or raise the game mean without changing admissible-% (better
+*choice* among legal words). Separating the two is the point.
+
+**This now runs before the sweep, not after.** In the 2026-08-22 session it sat
+behind the long cell, the sweep did not finish, and `format` came back empty —
+so the one measurement with no lock-in confound is the one the run lost. It
+costs ~2 minutes for all twelve. It goes first.
+
+It also reports **copy %** — how often the emitted word is one of the exemplars
+`few_shot` shows. That variant's 6.06 was verbatim copying, not few-shot
+learning; the rate is now measured rather than noticed afterwards.
+""")
+
+code(r'''
+@torch.no_grad()
+def format_probe(model, states, variant):
+    ok_parse = ok_legal = ok_adm = ok_copy = 0
+    ex = []
+    # per-state record so admissible-% can be split by |A| afterwards without
+    # re-running: the whole point of the bands above
+    per = []
+    for turn, hist, adm_set, ncand in states:
+        pr = render(variant, turn, hist, MAX_GUESSES, n_candidates=ncand)
+        shots = _shot_words(variant, hist)
+        ids = TOKENIZER(pr, return_tensors="pt").to("cuda")
+        out = model.generate(**ids, max_new_tokens=FORMAT_MAX_NEW,
+                             do_sample=False, num_beams=1,
+                             pad_token_id=TOKENIZER.pad_token_id,
+                             use_cache=True)
+        txt = TOKENIZER.decode(out[0][ids["input_ids"].shape[1]:],
+                               skip_special_tokens=True)
+        tok = txt.strip().split("\n")[0].strip().strip('."\'*` ').upper()
+        tok = "".join(ch for ch in tok if ch.isalpha())[:5]
+        is_legal = is_adm = False
+        if len(tok) == 5:
+            ok_parse += 1
+            if tok in LEGAL_GUESSES:
+                ok_legal += 1; is_legal = True
+                if tok.lower() in adm_set: ok_adm += 1; is_adm = True
+        is_copy = bool(tok and tok in shots)
+        if is_copy: ok_copy += 1
+        per.append((ncand, is_legal, is_adm, is_copy))
+        if len(ex) < 5: ex.append((txt.replace("\n", "\\n")[:24], tok))
+    n = len(states)
+    return {"variant": variant, "n": n,
+            "parse_pct": round(100*ok_parse/n, 1),
+            "legal_pct": round(100*ok_legal/n, 1),
+            "admissible_pct": round(100*ok_adm/n, 1),
+            "copy_pct": round(100*ok_copy/n, 1),
+            "per_state": per,
+            "examples": ex}
+
+def _adm_set(filt):
+    """HardModeFilter.words IS the surviving list - it is rebuilt in place by
+    refine(), so this is a snapshot, not a view."""
+    return set(filt.words)
+
+def build_probe_states(k):
+    rng = random.Random(SEED)
+    # make_solver(strategy, fb, config, model) - positional. The first version
+    # of this passed (BUNDLE, config) and raised on strategy.lower(). It was
+    # never caught because this cell sat behind the sweep and never ran.
+    solver = make_solver("entropy", BUNDLE.fb,
+                         SolverConfig(strategy="entropy"), BUNDLE.model)
+    # Stratified by |admissible|, not by turn. Stopping at a fixed turn against
+    # an entropy solver lands almost everything at |A| = 1: the expert is too
+    # good to leave interesting middles behind, which is the same effect that
+    # left the training set with 58 distinct boards above |A| = 10. A probe
+    # made only of forced positions cannot say where a prompt breaks, so the
+    # bands are filled to a quota instead.
+    bands = [(1, 1), (2, 10), (11, 50), (51, 10**9)]
+    per = max(1, k // len(bands))
+    got = {b: [] for b in bands}
+    def band_of(n):
+        for lo, hi in bands:
+            if lo <= n <= hi: return (lo, hi)
+        return None
+    for ans in ALL_VAL:
+        if all(len(v) >= per for v in got.values()): break
+        filt = HardModeFilter(LEGAL_LOWER, feedback_code)
+        cands = np.arange(VOCAB.n_answers, dtype=np.int32)
+        hist = []
+        for turn in range(1, MAX_GUESSES + 1):
+            w = (solver.opening_guess() if turn == 1
+                 else solver.choose(cands, turn)).lower()
+            c = feedback_code(w, ans.lower())
+            cands = BUNDLE.fb.filter_indices(cands, w, c)
+            filt.refine(w, c)
+            hist.append((w, code_to_pattern(c)))
+            if c == ALL_GREEN: break
+            b = band_of(len(cands))
+            if b and len(got[b]) < per:
+                got[b].append((turn + 1, list(hist), _adm_set(filt),
+                               int(len(cands))))
+                break
+    out = [s for b in bands for s in got[b]]
+    rng.shuffle(out)
+    print("  probe bands: " + "  ".join(
+        f"|A|{lo}-{'inf' if hi > 10**8 else hi}={len(got[(lo,hi)])}"
+        for lo, hi in bands))
+    return out[:k]
+
+if RUN_FORMAT:
+    print("building probe states ...", flush=True)
+    STATES = build_probe_states(FORMAT_PROBE_STATES)
+    print(f"  {len(STATES)} states, turns "
+          f"{Counter(s[0] for s in STATES).most_common()}")
+    for arm in ARMS:
+        pending = [v for v in NAMES if f"{arm}|{v}" not in STATE["format"]]
+        if not pending: continue
+        model = get_model(arm)
+        model.config.use_cache = True
+        for v in pending:
+            t0 = time.perf_counter()
+            r = format_probe(model, STATES, v); r["arm"] = arm
+            STATE["format"][f"{arm}|{v}"] = r
+            cp = f"  copy {r['copy_pct']:>5.1f}%" if r["copy_pct"] else ""
+            print(f"[{arm}] {v:<18} parse {r['parse_pct']:>5.1f}%  "
+                  f"legal {r['legal_pct']:>5.1f}%  adm {r['admissible_pct']:>5.1f}%"
+                  f"{cp}   {time.perf_counter()-t0:.0f}s", flush=True)
+            save()
+        model.config.use_cache = False
+    print("\nformat probe complete")
+else:
+    print("RUN_FORMAT = False, skipped")
+''')
+
+# ===========================================================================
+md(r"""
+---
+# 9. Probe A — the sweep
 
 This is the long cell. It is resumable and saves after every variant, so
 interrupting it loses at most one variant.
@@ -624,104 +807,6 @@ if RUN_GAMES:
     print("\nsweep complete")
 else:
     print("RUN_GAMES = False, skipped")
-''')
-
-# ===========================================================================
-md(r"""
----
-# 9. Probe B — format compliance, no decoder
-
-Same variants, decoder switched off, raw greedy generation on a fixed set of
-mid-game states. Three numbers per variant:
-
-- **legal %** — is the output a real 5-letter Wordle word at all?
-- **admissible %** — is it consistent with the feedback so far?
-- **parse %** — did the first line even look like a word?
-
-A prompt can raise admissible-% without changing the game mean (the decoder was
-already fixing it) or raise the game mean without changing admissible-% (better
-*choice* among legal words). Separating the two is the point.
-""")
-
-code(r'''
-@torch.no_grad()
-def format_probe(model, states, variant):
-    ok_parse = ok_legal = ok_adm = 0
-    ex = []
-    for turn, hist, adm_set, ncand in states:
-        pr = render(variant, turn, hist, MAX_GUESSES, n_candidates=ncand)
-        ids = TOKENIZER(pr, return_tensors="pt").to("cuda")
-        out = model.generate(**ids, max_new_tokens=FORMAT_MAX_NEW,
-                             do_sample=False, num_beams=1,
-                             pad_token_id=TOKENIZER.pad_token_id,
-                             use_cache=True)
-        txt = TOKENIZER.decode(out[0][ids["input_ids"].shape[1]:],
-                               skip_special_tokens=True)
-        tok = txt.strip().split("\n")[0].strip().strip('."\'*` ').upper()
-        tok = "".join(ch for ch in tok if ch.isalpha())[:5]
-        if len(tok) == 5:
-            ok_parse += 1
-            if tok in LEGAL_GUESSES:
-                ok_legal += 1
-                if tok.lower() in adm_set: ok_adm += 1
-        if len(ex) < 5: ex.append((txt.replace("\n", "\\n")[:24], tok))
-    n = len(states)
-    return {"variant": variant, "n": n,
-            "parse_pct": round(100*ok_parse/n, 1),
-            "legal_pct": round(100*ok_legal/n, 1),
-            "admissible_pct": round(100*ok_adm/n, 1),
-            "examples": ex}
-
-def _adm_set(filt):
-    """HardModeFilter.words IS the surviving list - it is rebuilt in place by
-    refine(), so this is a snapshot, not a view."""
-    return set(filt.words)
-
-def build_probe_states(k):
-    rng = random.Random(SEED)
-    solver = make_solver(BUNDLE, SolverConfig(strategy="entropy"))
-    out = []
-    for ans in ALL_VAL:
-        if len(out) >= k: break
-        filt = HardModeFilter(LEGAL_LOWER, feedback_code)
-        cands = np.arange(VOCAB.n_answers, dtype=np.int32)
-        hist = []
-        stop = rng.choice([1, 2, 2, 3, 3, 4])     # depth mix, weighted mid-game
-        for turn in range(1, MAX_GUESSES + 1):
-            w = (solver.opening_guess() if turn == 1
-                 else solver.choose(cands, turn)).lower()
-            c = feedback_code(w, ans.lower())
-            cands = BUNDLE.fb.filter_indices(cands, w, c)
-            filt.refine(w, c)
-            hist.append((w, code_to_pattern(c)))
-            if c == ALL_GREEN: break
-            if turn == stop:
-                out.append((turn + 1, list(hist), _adm_set(filt), int(len(cands))))
-                break
-    return out[:k]
-
-if RUN_FORMAT:
-    print("building probe states ...", flush=True)
-    STATES = build_probe_states(FORMAT_PROBE_STATES)
-    print(f"  {len(STATES)} states, turns "
-          f"{Counter(s[0] for s in STATES).most_common()}")
-    for arm in ARMS:
-        pending = [v for v in NAMES if f"{arm}|{v}" not in STATE["format"]]
-        if not pending: continue
-        model = get_model(arm)
-        model.config.use_cache = True
-        for v in pending:
-            t0 = time.perf_counter()
-            r = format_probe(model, STATES, v); r["arm"] = arm
-            STATE["format"][f"{arm}|{v}"] = r
-            print(f"[{arm}] {v:<18} parse {r['parse_pct']:>5.1f}%  "
-                  f"legal {r['legal_pct']:>5.1f}%  adm {r['admissible_pct']:>5.1f}%"
-                  f"   {time.perf_counter()-t0:.0f}s", flush=True)
-            save()
-        model.config.use_cache = False
-    print("\nformat probe complete")
-else:
-    print("RUN_FORMAT = False, skipped")
 ''')
 
 # ===========================================================================

@@ -69,7 +69,7 @@
       "accelerator": "t4x2",
       "dataset_sources": [
         "arnavyrr/wordle-sft-package-v2",
-        "arnavyrr/kaggle-adapters-upload"
+        "arnavyrr/wordle-adapters-v2"
       ],
       "enable_internet": true,
       "expected_minutes": 120
@@ -82,7 +82,7 @@
       "accelerator": "t4x2",
       "dataset_sources": [
         "arnavyrr/wordle-sft-package-v2",
-        "arnavyrr/kaggle-adapters-upload"
+        "arnavyrr/wordle-adapters-v2"
       ],
       "enable_internet": true,
       "expected_minutes": 240
@@ -95,12 +95,13 @@
       "accelerator": "t4x2",
       "dataset_sources": [
         "arnavyrr/wordle-sft-package-v2",
-        "arnavyrr/kaggle-adapters-upload"
+        "arnavyrr/wordle-adapters-v2"
       ],
       "enable_internet": true,
-      "expected_minutes": 90,
+      "expected_minutes": 45,
       "gate": "Cell 7: sft+baseline on 40 games must open SALET and land near 3.7642 (tolerance 0.60). A wrong opener means the wrong adapter - stop the run.",
-      "resumes": true
+      "resumes": true,
+      "max_runtime_minutes": 90
     }
   }
 }

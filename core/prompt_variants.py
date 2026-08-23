@@ -220,36 +220,69 @@ def v_keyboard(turn, history, max_guesses):
 # in neither guess - a worked example teaching the model a false deduction. The
 # patterns and constraint blocks below are now derived by the same functions the
 # real prompts use, so an exemplar cannot disagree with the game it illustrates.
-_SHOT_GAMES = [
-    ("chart", ["salet"], "craft"),
-    ("hobby", ["salet", "crony"], "bobby"),
+# A FIXED exemplar list is the defect that voided the first run of this
+# variant. Two exemplars ending "Next guess: CRAFT" / "Next guess: BOBBY" made
+# the final word a constant attractor: the model opened BOOBY on all 100 games
+# and the 6.06 mean measured verbatim copying, not few-shot learning.
+#
+# Nothing can structurally stop a model copying the last example, so this does
+# two things instead. The pool is rotated per state, so a copier emits eight
+# different words rather than one - it can no longer look like a stable policy.
+# And the harness measures the copy rate directly (`shot_copy_pct`), so the
+# variant is declared valid or invalid on a number rather than on inspection.
+#
+# Each entry is (answer, guesses_so_far, next_guess); `next_guess` is asserted
+# legal and consistent with its own feedback at build time.
+_SHOT_POOL = [
+    ("chart", ["salet"],           "audit"),   # 20 admissible - wide probe
+    ("hobby", ["salet", "crony"],  "howdy"),   #  7
+    ("plumb", ["salet", "chord"],  "imply"),   # 17
+    ("wince", ["salet", "dingo"],  "mince"),   #  2 - near the end
+    ("proxy", ["salet", "chirp"],  "proud"),   #  4
+    ("thumb", ["salet", "conic"],  "truth"),   #  6
+    ("berth", ["salet", "brine"],  "berth"),   #  1 - forced; teaches closing
+    ("glaze", ["salet"],           "blame"),   # 49
 ]
 
+_N_SHOTS = 2          # exemplars per prompt; the pool is what rotates
 
-def _build_shots():
+# Kept for callers that still import the old name.
+_SHOT_GAMES = _SHOT_POOL
+
+
+def _render_shot(n, answer, guesses, nxt):
     from wordle_solver import feedback_code, code_to_pattern
-    out = []
-    for n, (answer, guesses, nxt) in enumerate(_SHOT_GAMES, 1):
-        hist = [(g, code_to_pattern(feedback_code(g, answer))) for g in guesses]
-        out.append("\n".join(
-            [f"Example {n}", "History:"]
-            + _hist_lines(hist)
-            + [_deduced_block(hist), f"Next guess: {nxt.upper()}", ""]))
-    return "\n".join(out) + "\n"
+    hist = [(g, code_to_pattern(feedback_code(g, answer))) for g in guesses]
+    return "\n".join(
+        [f"Example {n}", "History:"]
+        + _hist_lines(hist)
+        + [_deduced_block(hist), f"Next guess: {nxt.upper()}", ""])
 
 
-_SHOTS_CACHE = None
+def _shot_index(history):
+    """Deterministic rotation offset. Hash of the live state, so the same state
+    always renders the same exemplars (the run stays reproducible) while
+    different states see different ones."""
+    import hashlib
+    h = hashlib.md5(repr(tuple(history)).encode("utf-8")).hexdigest()
+    return int(h[:8], 16)
 
 
-def _shots():
-    global _SHOTS_CACHE
-    if _SHOTS_CACHE is None:
-        _SHOTS_CACHE = _build_shots()
-    return _SHOTS_CACHE
+def shot_words(history):
+    """The exemplar next-guesses visible in this prompt. The harness uses this
+    to compute the copy rate."""
+    k, n = _shot_index(history), len(_SHOT_POOL)
+    return [_SHOT_POOL[(k + i) % n][2].upper() for i in range(_N_SHOTS)]
+
+
+def _shots(history):
+    k, n = _shot_index(history), len(_SHOT_POOL)
+    picks = [_SHOT_POOL[(k + i) % n] for i in range(_N_SHOTS)]
+    return "\n".join(_render_shot(i, *p) for i, p in enumerate(picks, 1)) + "\n"
 
 
 def v_few_shot(turn, history, max_guesses):
-    return RULES + "\n\n" + _shots() + "Now your game.\n" + \
+    return RULES + "\n\n" + _shots(history) + "Now your game.\n" + \
         v_baseline(turn, history, max_guesses).replace(RULES, "").lstrip("\n")
 
 

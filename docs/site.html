@@ -277,6 +277,51 @@ pre b{color:var(--ink);font-weight:600}
 .pairbox .lose{color:var(--bad);font-weight:600}
 .pairbox .meta{color:var(--ink-3)}
 
+/* coverage bars — unique training states per game phase.
+   The 58-vs-13,814 asymmetry is the finding; a table buries it. */
+.cov{display:flex;flex-direction:column;gap:2px;margin:22px 0}
+.cov .r{display:grid;grid-template-columns:150px 1fr 74px;gap:14px;align-items:center}
+.cov .lab{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;color:var(--ink-2);
+  text-align:right;white-space:nowrap
+}
+.cov .track{background:var(--surface-2);border-radius:2px;height:22px;position:relative}
+.cov .fill{background:var(--accent);height:100%;border-radius:2px;min-width:2px}
+.cov .r.thin .fill{background:var(--bad)}
+.cov .val{
+  font-family:var(--f-mono);font-size:12px;color:var(--ink-2);
+  font-variant-numeric:tabular-nums
+}
+.cov .r.thin .val{color:var(--bad);font-weight:600}
+.cov .axis{
+  grid-column:2/4;font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);
+  letter-spacing:.08em;text-transform:uppercase;padding-top:4px
+}
+@media (max-width:640px){
+  .cov .r{grid-template-columns:112px 1fr 62px;gap:9px}
+  .cov .lab{font-size:10px}
+}
+
+/* next-step ledger */
+.ledger{display:flex;flex-direction:column;gap:12px;margin:24px 0}
+.ledger .item{
+  border:1px solid var(--rule);border-left:2px solid var(--rule);border-radius:5px;
+  padding:16px 18px;background:var(--surface)
+}
+.ledger .item.now{border-left-color:var(--accent)}
+.ledger .item.next{border-left-color:var(--warn)}
+.ledger .item.done{border-left-color:var(--good)}
+.ledger .top{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:7px}
+.ledger h4{
+  font-family:var(--f-body);font-size:15px;font-weight:600;margin:0;color:var(--ink)
+}
+.ledger .cost{
+  margin-left:auto;font-family:var(--f-mono);font-size:11px;color:var(--ink-3);
+  white-space:nowrap
+}
+.ledger p{font-size:14.5px;margin:0;color:var(--ink-2);max-width:62ch}
+.ledger p + p{margin-top:8px}
+
 footer{
   padding:44px 0 60px;border-top:1px solid var(--rule);margin-top:20px;
   font-size:13.5px;color:var(--ink-3)
@@ -303,6 +348,8 @@ footer p{max-width:var(--measure)}
     <li><a href="#dpofail"><span class="n">10</span>DPO, and why it failed</a></li>
     <li><a href="#maths"><span class="n">11</span>The maths</a></li>
     <li><a href="#wrong"><span class="n">12</span>What we got wrong</a></li>
+    <li><a href="#coverage"><span class="n">13</span>What the data contains</a></li>
+    <li><a href="#next"><span class="n">14</span>What happens next</a></li>
   </ol>
 </nav>
 
@@ -316,7 +363,7 @@ footer p{max-width:var(--measure)}
     <div class="tile b">E</div>
     <div class="tile b">T</div>
   </div>
-  <p class="eyebrow">Research log &middot; phases 1&ndash;8</p>
+  <p class="eyebrow">Research log &middot; phases 1&ndash;9</p>
   <h1>Wordle at 0.5B</h1>
   <p class="lede">Can a half-billion-parameter language model learn to play Wordle by imitating a classical search algorithm &mdash; and what actually stops it when it can&rsquo;t?</p>
 
@@ -892,6 +939,129 @@ accuracy  0.604  -&gt;   <b>0.836</b></pre>
       <span class="lbl">Where it stands</span>
       <p><strong>3.76 mean, 243 of 246 solved.</strong> That beats classical random elimination and edges past letter-frequency heuristics, and sits 0.32 guesses behind a solver that plays perfectly. Most of that came from the decoder rather than the model &mdash; but a random player using the same decoder scores 5.18, so the model is contributing about 1.4 guesses of genuine skill.</p>
       <p>We now know exactly where the remaining 0.32 is &mdash; three quarters of it in a single narrow situation &mdash; and that the first attempt to train it away made things measurably worse. The best model is still the one from phase 7.</p>
+    </div>
+  </div>
+</section>
+
+<section id="coverage">
+  <div class="sec-head"><span class="sec-num">13</span>
+    <div><h2>What the training data contains</h2><p class="sec-sub">An audit prompted by the obvious question &mdash; is 19,212 examples simply not enough?</p></div>
+  </div>
+  <div class="prose">
+    <p>The model reduces the candidate set well and finishes badly. The natural reading is that it has not seen enough examples of finishing, and the fix is more endgame data. That reading is worth checking against the actual contents of the training set, because it has been wrong twice already &mdash; and counting rows is not the same as counting <em>distinct situations</em>.</p>
+
+    <p>Every training row carries the number of answers still consistent with the board when it was recorded. Grouping by that number sorts the data into game phases without any judgement call: a board with two thousand candidates is an opening, a board with three is an ending.</p>
+
+    <figure>
+      <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>Phase of the game</th>
+          <th class="num">Rows</th>
+          <th class="num">Distinct boards</th>
+          <th class="num">Copies each</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="name">Opening &mdash; over 500 left</td><td class="num">2,069</td><td class="num">1</td><td class="num">2069&times;</td></tr>
+          <tr><td class="name">Midgame &mdash; 51 to 500</td><td class="num">995</td><td class="num">11</td><td class="num">90&times;</td></tr>
+          <tr><td class="name">Late midgame &mdash; 11 to 50</td><td class="num">887</td><td class="num">46</td><td class="num">19&times;</td></tr>
+          <tr><td class="name">Endgame &mdash; 2 to 10</td><td class="num">7,501</td><td class="num">6,135</td><td class="num">1.2&times;</td></tr>
+          <tr><td class="name">Forced &mdash; exactly 1</td><td class="num">7,760</td><td class="num">7,679</td><td class="num">1.0&times;</td></tr>
+          <tr class="hl"><td class="name">Total</td><td class="num">19,212</td><td class="num">13,872</td><td class="num">1.4&times;</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <figcaption>Everything the phase-7 model was trained on: 7,067 rows of expert play plus the 12,145 synthetic endgame states built in phase 6. &ldquo;Copies each&rdquo; is rows divided by distinct boards.</figcaption>
+    </figure>
+
+    <p>The last two columns are the answer, and it is the opposite of the expectation. Read down the distinct-boards column: the endgame is not starved. It holds <strong>13,814 of the 13,872 distinct boards in the entire training set</strong>. Everything before it &mdash; every opening, every midgame, every late-midgame position the model has ever been shown &mdash; comes to <strong>58</strong>.</p>
+
+    <figure>
+      <div class="cov" role="img" aria-label="Distinct training boards by game phase: opening 1, midgame 11, late midgame 46, endgame 6135, forced 7679.">
+        <div class="r thin"><span class="lab">opening</span><span class="track"><span class="fill" style="width:0.013%"></span></span><span class="val">1</span></div>
+        <div class="r thin"><span class="lab">midgame</span><span class="track"><span class="fill" style="width:0.14%"></span></span><span class="val">11</span></div>
+        <div class="r thin"><span class="lab">late midgame</span><span class="track"><span class="fill" style="width:0.60%"></span></span><span class="val">46</span></div>
+        <div class="r"><span class="lab">endgame</span><span class="track"><span class="fill" style="width:79.9%"></span></span><span class="val">6,135</span></div>
+        <div class="r"><span class="lab">forced</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">7,679</span></div>
+        <div class="r"><span class="axis">distinct boards seen in training</span></div>
+      </div>
+      <figcaption>The same numbers on one axis. The three red rows are not small &mdash; they are, between them, fifty-eight positions.</figcaption>
+    </figure>
+
+    <p>The cause is that a good solver is a fast solver. It opens with SALET every single time, so all 2,069 opening rows are one board copied two thousand times. Turn two has only 141 distinct boards, because there are only so many feedback patterns SALET can come back with. The expert reaches a decisive position within three moves and the game ends, so its own competence is what starves the record of interesting middles.</p>
+
+    <div class="callout key">
+      <span class="lbl">The finding</span>
+      <p>The model did not learn to narrow the candidate set from abundant data. It learned it from <strong>58 distinct positions</strong>, and it does that part well. It learned to finish from nearly fourteen thousand, and that is the part it does badly.</p>
+      <p>So &ldquo;we have not used much data&rdquo; is right &mdash; but the shortage is at the <em>start</em> of the game, not the end.</p>
+    </div>
+
+    <h3>Was endgame-only training already tried?</h3>
+    <p>Close to it. Phase 6 did not replace the natural data, it added to it &mdash; but the synthetic set is <em>pure</em> endgame, every one of its 12,145 rows sitting at ten candidates or fewer, and it is nearly twice the size of the expert data it was mixed into. The result is a training set that is 79% endgame by row and 99.6% endgame by distinct board.</p>
+
+    <figure>
+      <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>Source</th><th class="num">Rows</th><th class="num">Distinct</th><th class="num">At &le;10 left</th><th>Effect on games</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="name">Expert play (phase 4)</td><td class="num">7,067</td><td class="num">2,188</td><td class="num">44%</td><td>the baseline</td></tr>
+          <tr><td class="name">Synthetic endgame (phase 6)</td><td class="num">12,145</td><td class="num">11,839</td><td class="num">100%</td><td>108 solved &rarr; 108 solved</td></tr>
+          <tr class="hl"><td class="name">Both, as trained</td><td class="num">19,212</td><td class="num">13,872</td><td class="num">79%</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <figcaption>Phase 6 tripled the endgame and moved zero games. The skill it was aimed at did improve &mdash; picking the right word from a narrowed board went from 20% to 27.5% &mdash; which is why the decoder, not the data, turned out to be the binding constraint one phase later.</figcaption>
+    </figure>
+
+    <p>Training on endgame data <em>alone</em>, with the opening and midgame removed entirely, is the one version not yet run. It is cheap to build. But it would be pushing harder on the side of the distribution that already holds 99.6% of the variety, and the last time that lever was pulled it bought a measurable skill improvement and no games. The unexplored direction is the thin one: the model has seen eleven midgames.</p>
+  </div>
+</section>
+
+<section id="next">
+  <div class="sec-head"><span class="sec-num">14</span>
+    <div><h2>What happens next</h2><p class="sec-sub">Four open ideas, what the record already says about each, and the order to run them in</p></div>
+  </div>
+  <div class="prose">
+    <p>Phase 9 asked whether the prompt is doing the work the model gets credit for. It found a 2.31-guess spread across twelve ways of writing the same board &mdash; but every one of those twelve was <em>worse</em> than the prompt the model was trained on, and the two nearest alternatives were statistical nulls. That is a brittleness result, not a leverage result, and it leaves the central question open rather than answering it.</p>
+
+    <div class="ledger">
+      <div class="item done">
+        <div class="top"><h4>Preserve the record, unblock the queue</h4><span class="cost">done</span></div>
+        <p>The phase-9 per-game results existed in exactly one place &mdash; a browser download &mdash; because that session was run interactively and left nothing the API could retrieve. They are now in the repository, and the re-analysis in section 13 was only possible because of it. Every run from here goes through the API so its output is always recoverable.</p>
+        <p>The phase-7 adapter has also been published as a dataset. Until now it lived as an ad-hoc attachment no fresh session could reproduce, which blocked every re-run that needed the real model.</p>
+      </div>
+
+      <div class="item now">
+        <div class="top"><h4>Fix the broken variant, measure what the model actually emits</h4><span class="cost">~30 min &middot; running</span></div>
+        <p>Two of the twelve variants were invalid. The few-shot prompt ended its last worked example with the word BOBBY, and the model simply copied it &mdash; opening BOOBY on all 100 games. Its 6.06 measured verbatim copying, not few-shot learning. The examples now rotate per board out of a pool of eight, so a copier can no longer produce one stable word, and the copy rate is <em>measured</em> rather than noticed afterwards.</p>
+        <p>The second gap: the probe that reads what the model writes with the decoder switched off never ran &mdash; it sat behind the long cell and the session ended first. It is the only measurement here with no lock-in confound, and it costs two minutes. It now runs first.</p>
+        <p>Also dropped: the untrained-model comparison arm. All nine of its runs landed between 6.71 and 6.88 with a 0.17 spread, because stock Qwen cannot play Wordle under any prompt. It could not tell a good prompt from a bad one, which was its entire job, and it consumed 85% of the session.</p>
+      </div>
+
+      <div class="item next">
+        <div class="top"><h4>The crossover &mdash; the experiment that decides</h4><span class="cost">~4 h training + 4 evals</span></div>
+        <p>Every prompt result so far carries the same confound: the model was trained on one format, so &ldquo;that format wins&rdquo; may only mean it recognises it. An untrained model cannot break that tie. A <em>second trained</em> model can.</p>
+        <p>Train the identical recipe on boards written in the raw-history format, then evaluate both models on both formats. If each wins on its own format by a similar margin, format is a robustness problem and the ranking means nothing. If the raw-history model recovers on raw-history boards, then the deduction the solver currently hands the model is learnable, and the &ldquo;the harness is the model&rdquo; worry mostly dissolves. If it does not recover, the scaffolding is honest and stays.</p>
+      </div>
+
+      <div class="item next">
+        <div class="top"><h4>Learning from its own mistakes &mdash; and the road to GRPO</h4><span class="cost">conditional</span></div>
+        <p>This was phase 8, and it failed instructively rather than mysteriously. 64% of the preference pairs compared an obviously good move to an obviously bad one; those cheap comparisons dominated the gradient, the model spent 390 of 466 steps growing more confident about things it already had right, and it drifted far enough from a working policy to lose 70 games and win 38.</p>
+        <p>Retrying is defensible, but only with the diagnosis applied: keep the close comparisons and discard the easy majority, stop on gameplay rather than loss &mdash; accuracy had saturated by step 75 &mdash; and stay near the starting policy. The same warning applies with more force to GRPO, which optimises the same kind of proxy with more compute and less stability.</p>
+      </div>
+
+      <div class="item next">
+        <div class="top"><h4>Widen the middle of the game</h4><span class="cost">unscoped</span></div>
+        <p>Section 13&rsquo;s finding suggests a target nobody has aimed at: 58 distinct positions above ten candidates. The same rollout machinery that manufactured 12,145 endgame boards can manufacture midgames &mdash; deliberately imperfect openings, off-policy second guesses, positions the expert is too good to ever visit.</p>
+        <p>It is listed last on purpose. Three quarters of the remaining gap sits at two-to-ten candidates, which is the region already saturated with data, so more midgame coverage is not obviously where the points are. It is the honest reading of the audit, not a prediction.</p>
+      </div>
+    </div>
+
+    <div class="callout key">
+      <span class="lbl">Instrumentation, from here on</span>
+      <p>Every run now records how many candidates were still live at each individual decision. Phase 8 established that three quarters of the remaining gap sits in one narrow band; phase 9 could not say whether prompt damage concentrated there too, because only per-game totals were kept. One extra field per decision closes that permanently.</p>
     </div>
   </div>
 </section>

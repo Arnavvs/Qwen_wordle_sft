@@ -169,6 +169,14 @@ PREV_RUN_DIR = None      # dir holding the Phase 7 SFT adapter
 MODEL_NAME  = "Qwen/Qwen2.5-0.5B-Instruct"
 SFT_ADAPTER = "tree_salet_endgame"
 
+# arm name -> adapter directory name. 'base' is the stock model and needs no
+# entry. Phase 10's crossover adds a second trained arm here and runs the 2x2
+# with ARMS = ["sft","sft_rawhist"], VARIANTS_TO_RUN = ["baseline","raw_history"].
+ARM_ADAPTERS = {
+    "sft":         SFT_ADAPTER,
+    "sft_rawhist": "tree_salet_endgame_rawhist",
+}
+
 # ---- what to run ----------------------------------------------------------
 RUN_GAMES   = True       # probe A
 RUN_FORMAT  = True       # probe B (cheap: ~2 min for all 12) - now runs FIRST
@@ -320,11 +328,23 @@ def find_adapter(name):
         print("  Refusing to fall back - that would measure the wrong model.")
     return None
 
-SFT_PATH = find_adapter(SFT_ADAPTER)
-if "sft" in ARMS and SFT_PATH is None:
-    raise SystemExit(f"arm 'sft' requested but adapter {SFT_ADAPTER!r} is not attached. "
-                     f"Attach it, or set ARMS = ['base'].")
-print("SFT adapter:", SFT_PATH or "(not needed)")
+# Resolve every non-'base' arm to a real adapter directory up front, so a
+# missing adapter fails in cell 2 rather than an hour into the sweep.
+ARM_PATHS = {}
+for _arm in ARMS:
+    if _arm == "base": continue
+    _name = ARM_ADAPTERS.get(_arm)
+    if _name is None:
+        raise SystemExit(f"arm {_arm!r} has no entry in ARM_ADAPTERS.")
+    _p = find_adapter(_name)
+    if _p is None:
+        raise SystemExit(
+            f"arm {_arm!r} needs adapter {_name!r}, which is not attached. "
+            f"Attach the dataset holding it, or drop the arm. Do NOT substitute "
+            f"a different adapter - that voided Phase 8 v3.")
+    ARM_PATHS[_arm] = _p
+SFT_PATH = ARM_PATHS.get("sft")
+print("arms ->", {k: os.path.basename(v) for k, v in ARM_PATHS.items()} or "base only")
 ''')
 
 # ===========================================================================
@@ -568,16 +588,21 @@ def save(tag=""):
 
 MODEL_CACHE = {}
 def get_model(arm):
-    """One load per arm. The 12 variants share it - reloading per variant would
-    cost more than the sweep itself."""
+    """One load per arm. The variants share it - reloading per variant would
+    cost more than the sweep itself.
+
+    'base' is the stock model; every other arm is an adapter name resolved
+    through ARM_ADAPTERS. That indirection is what lets this notebook run the
+    Phase 10 crossover (two trained adapters x two formats) without a fork."""
     if arm in MODEL_CACHE: return MODEL_CACHE[arm]
     for k in list(MODEL_CACHE):
         del MODEL_CACHE[k]
     torch.cuda.empty_cache()
     print(f"  loading arm {arm!r} ...", flush=True)
     m = base_model()
-    if arm == "sft":
-        m = PeftModel.from_pretrained(m, SFT_PATH, is_trainable=False)
+    if arm != "base":
+        path = ARM_PATHS[arm]
+        m = PeftModel.from_pretrained(m, path, is_trainable=False)
     m = m.to("cuda").eval()
     MODEL_CACHE[arm] = m
     return m
@@ -947,6 +972,14 @@ try:
     display(FileLink(os.path.relpath(RESULTS_ZIP, "/kaggle/working")))
 except Exception: pass
 
+# Auto-publish is a CONVENIENCE. It must never decide whether the run passed.
+#
+# The 2026-08-23 session completed every measurement, saved, and zipped - then
+# this block raised SystemExit because no Kaggle secrets are configured, and
+# IPython crashed formatting that exception ('tuple' object has no attribute
+# 'f_lineno'). Kaggle reported the whole run as ERROR. The results were sitting
+# in the zip the entire time. Nothing here is allowed to raise.
+USER = None
 try:
     from kaggle_secrets import UserSecretsClient
     _s = UserSecretsClient()
@@ -954,20 +987,29 @@ try:
     os.environ["KAGGLE_KEY"] = _s.get_secret("KAGGLE_KEY")
     USER = os.environ["KAGGLE_USERNAME"]
 except Exception as e:
-    print("no credentials - zip only"); raise SystemExit
+    print(f"no Kaggle credentials ({type(e).__name__}) - results are in the zip "
+          f"above and in {RESULTS_ROOT}. This is not a failure.")
 
-json.dump({"title": TITLE, "id": f"{USER}/{SLUG}",
-           "licenses": [{"name": "CC0-1.0"}]},
-          open(os.path.join(RESULTS_ROOT, "dataset-metadata.json"), "w"), indent=2)
-def run(c):
-    r = subprocess.run(c, capture_output=True, text=True)
-    return r.returncode, (r.stdout or "") + (r.stderr or "")
-rc, out = run(["kaggle", "datasets", "version", "-p", RESULTS_ROOT,
-               "-m", f"phase9 {time.strftime('%Y-%m-%d %H:%M')}", "-r", "zip"])
-if rc != 0 and ("404" in out or "not found" in out.lower()):
-    rc, out = run(["kaggle", "datasets", "create", "-p", RESULTS_ROOT, "-r", "zip"])
-print(f"PUBLISHED -> https://www.kaggle.com/datasets/{USER}/{SLUG}" if rc == 0
-      else "PUBLISH FAILED - use the zip\n" + out.strip()[:600])
+if USER:
+    try:
+        json.dump({"title": TITLE, "id": f"{USER}/{SLUG}",
+                   "licenses": [{"name": "CC0-1.0"}]},
+                  open(os.path.join(RESULTS_ROOT, "dataset-metadata.json"), "w"),
+                  indent=2)
+        def run(c):
+            r = subprocess.run(c, capture_output=True, text=True)
+            return r.returncode, (r.stdout or "") + (r.stderr or "")
+        rc, out = run(["kaggle", "datasets", "version", "-p", RESULTS_ROOT,
+                       "-m", f"phase9 {time.strftime('%Y-%m-%d %H:%M')}", "-r", "zip"])
+        if rc != 0 and ("404" in out or "not found" in out.lower()):
+            rc, out = run(["kaggle", "datasets", "create", "-p", RESULTS_ROOT,
+                           "-r", "zip"])
+        print(f"PUBLISHED -> https://www.kaggle.com/datasets/{USER}/{SLUG}" if rc == 0
+              else "publish failed - use the zip\n" + out.strip()[:600])
+    except Exception as e:
+        print(f"publish failed ({type(e).__name__}: {e}) - use the zip")
+
+print("\nRUN COMPLETE - all measurements saved.")
 ''')
 
 # ===========================================================================

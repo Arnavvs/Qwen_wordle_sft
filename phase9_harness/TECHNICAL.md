@@ -341,6 +341,12 @@ longer. So the block accelerates the midgame rather than gating solvability.
 "The harness has been doing part of the deduction" stands, but the honest
 version is "part of the *efficient* deduction", not "the deduction".
 
+> **RETRACTED 2026-08-23 by the 246-game re-run — see §8c.** The paragraph
+> above is a sampling artifact. `raw_history` beats baseline on failures only
+> on this particular 100; on the other 146 it loses 12 games to baseline's 1.
+> Finding 2 stands in its original strong form. The paragraph is kept because
+> the reasoning was sound given the data and the data was the problem.
+
 **A framing correction to finding 1.** No variant beat `baseline` — the best
 alternatives are nulls (+0.03, +0.04) and everything else is worse. The
 measured spread is entirely downside. "Prompt format is worth 25–75× what
@@ -350,6 +356,80 @@ improve it — for which the measured evidence within this family is a null).
 The pre-registered decision table in RUN_PHASE9.md did not anticipate this
 outcome shape — large spread, all negative — so by the project's own rules the
 GRPO-vs-harness fork is still open, pending §10 item C.
+
+### 8c. The 246-game re-run (2026-08-23)
+
+`ARMS=["sft"]`, all 246 held-out answers, four variants, rotating non-copyable
+few-shot exemplars, probe B moved ahead of the sweep.
+
+| variant | mean | vs baseline | solved | t |
+|---|---:|---:|---:|---:|
+| baseline | **3.7642** | — | 242/246 | — |
+| with_count 🚩 | 3.8049 | +0.041 | 241 | 1.55 |
+| raw_history | 4.2805 | +0.516 | 232 | 7.07 |
+| few_shot | 5.0041 | +1.240 | 215 | 13.06 |
+
+Fair spread 1.24 (excluding the leaky `with_count`). Still entirely downside:
+no variant beat `baseline`, so the framing correction to finding 1 in §8b
+survives unchanged.
+
+**The 100 was lying about failures.** The 100 answers are a subset of the 246,
+so the two runs can be split:
+
+| games | baseline | raw_history |
+|---|---:|---:|
+| the shared 100 | 3.750 (3 fail) | 4.150 (**2 fail**) |
+| the other 146 | 3.774 (1 fail) | 4.370 (**12 fail**) |
+| all 246 | 3.764 (4 fail) | 4.281 (**14 fail**) |
+
+The subset happened to contain almost none of the games `raw_history` loses.
+§8b's decomposition — 1 new failure, 64 slower solves — was arithmetically
+correct on the games it had and wrong about the population. Means were stable
+across the two sample sizes (3.750 → 3.764); **failure counts were not**, and
+failures are what the +7 cap makes expensive. Report failure rates on 246 only.
+
+**Determinism is settled.** Both runs share those 100 answers, and all 300
+shared per-game scores (baseline, raw_history, with_count) are **bit-identical**
+across two independent Kaggle sessions on different notebook versions. The
+Phase 8b baseline that would not reproduce was the `find_adapter` fallback
+loading the wrong adapter, not latent nondeterminism. That doubt is retired.
+
+**Probe B, finally measured.** Decoder off, 148 states stratified by |A|:
+
+| variant | parse% | legal% | admissible% |
+|---|---:|---:|---:|
+| baseline | 99.3 | 84.5 | **22.3** |
+| with_count | 100.0 | 81.8 | 14.2 |
+| few_shot | 99.3 | 94.6 | 12.2 |
+| raw_history | 100.0 | **95.9** | **1.4** |
+
+`raw_history` emits *more* legal words than `baseline` and almost no admissible
+ones. The model retains the rules of Wordle without the constraint block and
+loses the deduction — which is finding 2 measured directly on the model rather
+than inferred from game outcomes. It does **not** separate lock-in from
+intrinsic: the adapter never saw this format. That is §10C's job.
+
+`few_shot` is now valid — `shot_copy_pct` = 0.0 with the rotating pool, against
+a variant that previously opened `BOOBY` on every game. Its 5.00 is a real
+measurement of few-shot learning failing, not an artifact.
+
+**The failures have one shape.** All four baseline losses narrow correctly and
+then cycle rhyming decoys while the answer stays admissible throughout:
+
+```
+JUDGE  |A| 12972 -> 715 -> 18 -> 8 -> 4 -> 3
+       SALET  DRONE  HEDGE  BUDGE  PUDGE  MUDGE      (never JUDGE)
+KRILL  |A| 12972 -> 263 ->  9 -> 4 -> 3 -> 2
+       SALET  COURD  FRILL  GRILL  BRILL  PRILL      (never KRILL)
+PITCH  SALET  NORTH  BUTCH  DITCH  WITCH  HITCH      (never PITCH)
+WATER  SALET  TAMER  EATER  CATER  HATER  RATER      (never WATER)
+```
+
+Every guess after turn 2 is admissible; the model is not violating feedback, it
+is ranking near-neighbours badly. Of the 222 games that reach |A| <= 10, 1.8%
+are still lost (`raw_history` 5.7%, `few_shot` 8.2%). This is a discrimination
+failure in the band that already holds 79% of the training rows — not a
+coverage gap.
 
 ---
 

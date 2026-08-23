@@ -3,7 +3,37 @@
 Full project log: classical solver, distillation into a 0.5B LLM, why that
 failed, and the diagnostic run that identified the real cause.
 
-**Where this stands after Phase 8.** A 0.5B LLM distilled from a classical
+**Where this stands after Phase 9.** The headline number is unchanged at
+**3.7642**, and it now has a much stronger claim to being real: two independent
+Kaggle sessions on different notebook versions produced **bit-identical**
+per-game results across 300 shared games. The Phase 8b baseline that would not
+reproduce was a `find_adapter` fallback loading the wrong adapter, not latent
+nondeterminism — so the doubt that hung over every paired comparison in this
+project is retired.
+
+Phase 9 varied the *prompt* with the decoder held fixed, across twelve formats.
+The spread is 1.24 guesses and **every variant is worse than the format the
+model was trained on** — the two nearest are statistical nulls and the rest
+degrade. That is a brittleness result, not a leverage result: it says a bad
+prompt can break a single-format 0.5B adapter, which is unsurprising, and says
+nothing about whether a better prompt exists. Removing the solver-derived
+constraint block (`raw_history`) costs 0.52 guesses and ten solved games, and
+with the decoder switched off that adapter emits **1.4%** admissible words
+against `baseline`'s 22.3% — while emitting *more* legal words. It keeps the
+rules and loses the deduction.
+
+All of it carries one confound: the adapter only ever saw `baseline`. **Phase
+10 is built to break that tie** and is ready to run — see
+[phase10_crossover/](phase10_crossover/).
+
+A training-data audit run alongside it found something that reframes the
+endgame work: 19,212 training rows are only **13,872 distinct boards**, and
+13,814 of those sit at ≤10 candidates. Above 10 candidates the entire corpus
+holds **58 distinct boards** — 1 opening, 11 midgame, 46 late-midgame — because
+a good solver opens the same word every game and reaches a decisive position in
+three moves. The endgame is the data-*rich* half.
+
+**Where this stood after Phase 8.** A 0.5B LLM distilled from a classical
 expert, decoded under a feedback-consistency constraint, plays Wordle at
 **3.7642 mean / 1.6% failure** on 246 held-out answers — or **243/246 solved at
 1.2% failure** if tuned for wins rather than speed. That beats classical
@@ -42,7 +72,13 @@ mistakes, and paid for the drift in real play.
   working on the project, published as a web page.
 
 `README.md` (unchanged) is the deliverable doc for **Phase 1** — the classical
-solver on its own. This file covers the whole arc, Phases 1–8.
+solver on its own. This file covers the whole arc, Phases 1–10.
+
+**Phase-level technical notes** live next to their code:
+[phase9_harness/TECHNICAL.md](phase9_harness/TECHNICAL.md) (§8c holds the
+246-game re-run, the §8b retraction, probe B, and the failure analysis) and
+[phase10_crossover/RUN.md](phase10_crossover/RUN.md) (the crossover's
+pre-registered design and how to run it).
 
 ---
 
@@ -63,7 +99,9 @@ later corrected).
 | 7 | Does a feedback-consistent decoder fix it? | **Yes — 3.78, beats `random`** |
 | 7b | What is the right filter threshold? | plateau at 10–50; **3.7642**, 243/246 |
 | 8 | Where is the gap, and does DPO close it? | 74.7% in 2–10 words; DPO **regressed** (t=−3.21) |
-| 8b | Does a clean dataset change that? | run void — baseline failed to reproduce; retry prepared |
+| 8b | Does a clean dataset change that? | run void — wrong adapter silently loaded; cause found, see Phase 9 |
+| 9 | Is the harness the model? | spread 1.24 guesses, **all downside**; no prompt beat `baseline` |
+| 10 | Is that lock-in or the format? | **prepared, not yet run** — the crossover |
 
 Phases 1–3 were built before the numbering existed and are labelled
 retrospectively; the work is unchanged.

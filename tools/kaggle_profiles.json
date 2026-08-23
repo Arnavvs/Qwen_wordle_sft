@@ -102,6 +102,21 @@
       "gate": "Cell 7: sft+baseline on 40 games must open SALET and land near 3.7642 (tolerance 0.60). A wrong opener means the wrong adapter - stop the run.",
       "resumes": true,
       "max_runtime_minutes": 90
+    },
+    "phase10": {
+      "notebook": "phase10_crossover/wordle_phase10_crossover_kaggle.ipynb",
+      "generator": "phase10_crossover/make_crossover_notebook.py",
+      "slug": "wordle-phase-10-format-crossover",
+      "title": "Wordle Phase 10 - format crossover",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 90,
+      "max_runtime_minutes": 200,
+      "gate": "Cell 4 must report round-trip ok=19,212 / mismatch=0, and cell 6 must land on 1202 steps like Phase 6. A different step count means the data is not what it should be - stop rather than interpret.",
+      "resumes": false
     }
   }
 }

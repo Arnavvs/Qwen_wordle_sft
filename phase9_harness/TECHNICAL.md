@@ -309,6 +309,48 @@ prompt. Findings 1, 2, 4 and 5 all inherit this. Finding 3 does not.
 
 Separating the two requires a control arm that is not ceiling-bound (§7).
 
+### 8b. Post-hoc decomposition (added 2026-08-23, from the saved per-game arrays)
+
+Each variant's paired degradation vs `baseline`, split into **new failures**
+(games baseline solves and the variant does not, scored at the cap of 7) and
+**slower solves** (both solve, variant takes more guesses):
+
+| variant | Δmean | new fails | fail cost | slow cost |
+|---|---:|---:|---:|---:|
+| with_count 🚩 | +0.03 | 0 | 0 | 10 |
+| hard_mode_hint | +0.04 | 0 | 0 | 6 |
+| reversed | +0.05 | 1 | 1 | 6 |
+| guided_prose | +0.23 | 2 | 2 | 34 |
+| constraints_only | +0.25 | 2 | 4 | 38 |
+| emoji | +0.33 | 2 | 4 | 59 |
+| **raw_history** | **+0.40** | **1** | **1** | **64** |
+| verbose | +0.51 | 3 | 5 | 63 |
+| keyboard | +0.83 | 10 | 28 | 70 |
+| minimal | +1.74 | 38 | 126 | 66 |
+| few_shot ⚠ | +2.31 | 48 | 166 | 76 |
+
+Two distinct failure regimes: the mid-table variants (`guided_prose` through
+`verbose`) degrade almost purely through **friction** — extra probing turns,
+nearly no lost games — while `keyboard`/`minimal`/`few_shot` degrade through
+**outright failure**.
+
+**This softens finding 2.** `raw_history`'s +0.40 is 64/65 slower solves and
+one lost game; it actually solved 98/100, one more than baseline. Without the
+solver's constraint block the model still *wins* — it just probes ~0.4 turns
+longer. So the block accelerates the midgame rather than gating solvability.
+"The harness has been doing part of the deduction" stands, but the honest
+version is "part of the *efficient* deduction", not "the deduction".
+
+**A framing correction to finding 1.** No variant beat `baseline` — the best
+alternatives are nulls (+0.03, +0.04) and everything else is worse. The
+measured spread is entirely downside. "Prompt format is worth 25–75× what
+training was" therefore conflates *brittleness* (a bad prompt can break a
+single-format 0.5B adapter — expected) with *leverage* (a better prompt could
+improve it — for which the measured evidence within this family is a null).
+The pre-registered decision table in RUN_PHASE9.md did not anticipate this
+outcome shape — large spread, all negative — so by the project's own rules the
+GRPO-vs-harness fork is still open, pending §10 item C.
+
 ---
 
 ## 9. Validation performed before execution
@@ -333,15 +375,67 @@ picks by hash and cannot copy.
 
 ---
 
-## 10. Recommended next actions
+## 10. Recommended next actions (revised 2026-08-23)
 
-| priority | action | cost |
+### A. Housekeeping — done or one command away
+
+| action | status |
+|---|---|
+| Preserve the per-game record in the repo | **done** — `results/phase9/harness_results.json` (recovered from Downloads; it existed nowhere else. The Aug-22 session was interactive, so its output is not retrievable via the Kaggle API — run future sweeps as committed runs through `tools/kaggle_run.py` so results are always pullable) |
+| Upload `uploads/phase7_adapter/tree_salet_endgame` as a Kaggle dataset | **blocker for any API re-run.** It is in no current dataset; the Aug-22 session found it through an ad-hoc attachment that a fresh session cannot reproduce |
+| `ARMS = ["sft"]` | keep — the base arm is ceiling-bound (§7) and cost 84.5% of wall time |
+
+### B. One cheap GPU session (~25 min total)
+
+| action | cost | note |
 |---|---|---|
-| 1 | `ARMS = ["sft"]` — drop the ceiling-bound arm | saves ~85% of runtime |
-| 2 | Re-run `few_shot` with non-copyable exemplars | ~3 min |
-| 3 | Run probe B (move cell 18 before cell 16) | ~2 min |
-| 4 | Re-run the top 3–4 variants at `N_GAMES = 246` for publishable numbers | ~15 min |
-| 5 | A discriminating control arm to break the §8 confound | design work |
+| Probe B, before the sweep this time | ~2 min | `format` is empty; this is the only measurement of what the model *emits* vs what the decoder repairs, and it has no lock-in confound |
+| `few_shot` with non-copyable exemplars | ~3 min | closes the §7 defect |
+| Top 3–4 variants at `N_GAMES = 246` | ~15 min | for the write-up, report as *tightened precision*, not replication — the 100 games are a subset of the 246, and re-measuring selected winners is not an independent confirmation |
+
+### C. The decisive experiment — a format crossover (one SFT run)
+
+The §8 confound (lock-in vs intrinsic) and the `raw_history` question
+(can the model learn the deduction the solver block does for it?) are **the
+same experiment**: train the identical SFT recipe on `raw_history`-rendered
+rows (`phase2_trajectories/rerender_prompts.py` already exists for exactly
+this), then evaluate the 2×2:
+
+| | eval `baseline` | eval `raw_history` |
+|---|---|---|
+| adapter trained on `baseline` | 3.75 (measured) | 4.15 (measured) |
+| adapter trained on `raw_history` | ? | **?** — the cell that decides |
+
+- Both adapters best on their own format by a similar margin → **lock-in**;
+  format is a robustness problem, not a quality ranking.
+- `raw_history`-adapter on `raw_history` recovers to ≈3.75 → the deduction is
+  **learnable**; the solver block was a crutch for this adapter, not a
+  requirement — and the "harness is the model" worry mostly dissolves.
+- It stays ≈4.15 → the deduction genuinely needs the solver at 0.5B, and the
+  constraint block is honest scaffolding to keep.
+
+Cost: one Phase-6-style SFT run (~4 h T4) + 4 paired evals. This is the item
+the old list deferred as "design work"; it is now the highest-value run in the
+project.
+
+### D. Conditional, after C
+
+- **If lock-in:** mixed-format SFT — one adapter trained on all non-leaky
+  variants. Pre-registered expectation: hard-mode violations drop (finding 5:
+  HMV% tracks format quality in exactly the |admissible| > 20 regime the
+  adaptive filter leaves unguarded), mean holds or improves. This is the first
+  training intervention since Phase 6 with a mechanism for why it should move
+  the number.
+- **If intrinsic / learnable-but-not-learned:** the prompt thread closes with a
+  clean conclusion, and the GRPO-vs-accept-3.76 decision resurfaces with the
+  scaffolding half finally measured.
+
+### E. Instrumentation for whichever run is next
+
+Log `|admissible|` per decision in `play()`. The Phase 8 counterfactual showed
+74.7% of the classical gap lives at 2–10 admissible; nothing in Phase 9 can
+currently say whether prompt degradation concentrates there too, because only
+per-game totals were saved. One extra field per decision closes that.
 
 ---
 

@@ -1,6 +1,0 @@
-pair                             diff  pairedSE      t   verdict
-entropy - tree_soare          +0.0081    0.0251   0.32   INDISTINGUISHABLE
-entropy - tree_salet          -0.0244    0.0450  -0.54   INDISTINGUISHABLE
-tree_soare - tree_salet       -0.0325    0.0457  -0.71   INDISTINGUISHABLE
-
-paired sd = 0.7052; to resolve the true 0.0432 gap needs ~1024 paired games (you have 246)

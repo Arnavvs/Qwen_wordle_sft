@@ -1,8 +1,0 @@
-FULL BENCHMARK — all 2315 answers, depth=2, top_k=100, opener=SOARE
-
-PRUNED (top_k=100, endgame_top_k=60 below |S|<=10, depth=2); opener=soare -- optimal only within the searched pool, NOT proven optimal
-solver                 n     mean  med    std  max     <=3     <=4     <=5  fail   ms/game     nodes     cache
---------------------------------------------------------------------------------------------------------------
-tree_soare_k100     2315   3.4544    3  0.627    6   55.94   95.94   99.83     0      97.2     20655     93778
-
-wrote artifacts/tree_full_d2.json

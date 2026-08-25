@@ -1,4 +1,0 @@
-Model,Mean_Score,Median,Max,Pct_<=3,Pct_<=4,Pct_<=5,Failure_Rate%,Invalid_Format%,Invalid_Word%,Opener,Opener_Accuracy%
-qwen_entropy,6.3902,4.0,6,8.54,13.82,17.89,79.27,8.13,28.61,SOARE,100.0
-qwen_tree_soare,6.3211,4.0,6,9.35,16.26,19.92,78.46,8.74,27.83,SOARE,100.0
-qwen_tree_salet,6.1748,3.0,6,13.41,20.73,23.17,76.42,7.81,29.75,SALET,100.0

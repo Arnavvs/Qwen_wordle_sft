@@ -1,8 +1,0 @@
-FULL BENCHMARK — all 2315 answers, depth=6, top_k=100, opener=SALET
-
-PRUNED (top_k=100, endgame_top_k=60 below |S|<=10, depth=6); opener=salet -- optimal only within the searched pool, NOT proven optimal
-solver                 n     mean  med    std  max     <=3     <=4     <=5  fail   ms/game     nodes     cache
---------------------------------------------------------------------------------------------------------------
-tree_salet_k100     2315   3.4212    3  0.630    5   57.24   96.50  100.00     0     175.6    133705    133705
-
-wrote artifacts/tree_full_salet.json

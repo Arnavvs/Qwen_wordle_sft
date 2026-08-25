@@ -1,6 +1,0 @@
-A_shipped          opener=soare   mean=3.4644  max=6  <=3=54.47%  <=4=97.24%  fails=0  (282s)
-B_no_preference    opener=soare   mean=3.5279  max=6  <=3=48.86%  <=4=97.06%  fails=0  (252s)
-C_last_index       opener=soare   mean=3.4631  max=6  <=3=54.56%  <=4=97.28%  fails=0  (276s)
-D_expected_break   opener=soare   mean=3.4644  max=6  <=3=54.47%  <=4=97.24%  fails=0  (319s)
-
-spread across tie-break rules: 3.4631 .. 3.5279 (delta 0.0648 guesses)

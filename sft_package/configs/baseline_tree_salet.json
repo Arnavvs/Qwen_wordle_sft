@@ -1,0 +1,13 @@
+{
+  "name": "baseline_tree_salet",
+  "description": "Plain SFT on the optimal policy. NOTE: differs from baseline_entropy in BOTH opener and policy.",
+  "seed": 20260817,
+  "dedup": false,
+  "shuffle": true,
+  "components": [
+    {
+      "source": "data/tree_salet/train.jsonl",
+      "repeat": 1
+    }
+  ]
+}

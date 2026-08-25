@@ -1,0 +1,488 @@
+{
+  "phase": 6,
+  "note": "246 HELD-OUT answers.",
+  "adapter": "tree_salet_endgame",
+  "model_name": "Qwen/Qwen2.5-0.5B-Instruct",
+  "training": {
+    "name": "tree_salet_endgame",
+    "n_train_examples": 19212,
+    "n_truncated": 0,
+    "model_name": "Qwen/Qwen2.5-0.5B-Instruct",
+    "learning_rate": 0.0002,
+    "num_epochs": 2,
+    "per_device_batch_size": 4,
+    "gradient_accumulation": 4,
+    "effective_batch_size": 16,
+    "max_seq_len": 640,
+    "lr_scheduler": "cosine",
+    "warmup_ratio": 0.03,
+    "fp16": true,
+    "gradient_checkpointing": true,
+    "seed": 20260817,
+    "gpu": "Tesla T4",
+    "training_seconds": 3869.9,
+    "global_steps": 1202,
+    "first_loss": 5.8860595703125,
+    "final_loss": 0.7418605804443359,
+    "data_stats": {
+      "natural": {
+        "n_rows": 7067,
+        "buckets": {
+          ">10": 3951,
+          "1": 1612,
+          "3": 273,
+          "4-10": 707,
+          "2": 524
+        },
+        "turns": {
+          "1": 2069,
+          "2": 2069,
+          "3": 1984,
+          "4": 875,
+          "5": 70
+        },
+        "turn1_pct": 29.28,
+        "k1_rows": 1612,
+        "k1_words": 1612,
+        "k1_paths_per_word": 1.0
+      },
+      "endgame": {
+        "n_rows": 12145,
+        "buckets": {
+          "4-10": 1967,
+          "2": 2041,
+          "1": 6148,
+          "3": 1989
+        },
+        "turns": {
+          "3": 3613,
+          "5": 2668,
+          "6": 1345,
+          "4": 4219,
+          "2": 300
+        },
+        "turn1_pct": 0.0,
+        "k1_rows": 6148,
+        "k1_words": 2068,
+        "k1_paths_per_word": 2.973
+      },
+      "mixed": {
+        "n_rows": 19212,
+        "buckets": {
+          "2": 2565,
+          "1": 7760,
+          "4-10": 2674,
+          "3": 2262,
+          ">10": 3951
+        },
+        "turns": {
+          "3": 5597,
+          "4": 5094,
+          "5": 2738,
+          "1": 2069,
+          "2": 2369,
+          "6": 1345
+        },
+        "turn1_pct": 10.77,
+        "k1_rows": 7760,
+        "k1_words": 2068,
+        "k1_paths_per_word": 3.752
+      },
+      "endgame_repeat": 1
+    }
+  },
+  "data_stats": {
+    "natural": {
+      "n_rows": 7067,
+      "buckets": {
+        ">10": 3951,
+        "1": 1612,
+        "3": 273,
+        "4-10": 707,
+        "2": 524
+      },
+      "turns": {
+        "1": 2069,
+        "2": 2069,
+        "3": 1984,
+        "4": 875,
+        "5": 70
+      },
+      "turn1_pct": 29.28,
+      "k1_rows": 1612,
+      "k1_words": 1612,
+      "k1_paths_per_word": 1.0
+    },
+    "endgame": {
+      "n_rows": 12145,
+      "buckets": {
+        "4-10": 1967,
+        "2": 2041,
+        "1": 6148,
+        "3": 1989
+      },
+      "turns": {
+        "3": 3613,
+        "5": 2668,
+        "6": 1345,
+        "4": 4219,
+        "2": 300
+      },
+      "turn1_pct": 0.0,
+      "k1_rows": 6148,
+      "k1_words": 2068,
+      "k1_paths_per_word": 2.973
+    },
+    "mixed": {
+      "n_rows": 19212,
+      "buckets": {
+        "2": 2565,
+        "1": 7760,
+        "4-10": 2674,
+        "3": 2262,
+        ">10": 3951
+      },
+      "turns": {
+        "3": 5597,
+        "4": 5094,
+        "5": 2738,
+        "1": 2069,
+        "2": 2369,
+        "6": 1345
+      },
+      "turn1_pct": 10.77,
+      "k1_rows": 7760,
+      "k1_words": 2068,
+      "k1_paths_per_word": 3.752
+    },
+    "endgame_repeat": 1
+  },
+  "eval_rows": {
+    "tree_salet_endgame__ban": {
+      "model": "tree_salet_endgame [ban]",
+      "mode": "constrained",
+      "n_games": 246,
+      "mean_failures_as_7": 5.4797,
+      "mean_solved_only": 4.25,
+      "median": 4.0,
+      "max": 6,
+      "pct_le3": 16.26,
+      "pct_le4": 33.33,
+      "pct_le5": 45.12,
+      "pct_le6": 55.28,
+      "distribution": {
+        "1": 0,
+        "2": 5,
+        "3": 35,
+        "4": 42,
+        "5": 29,
+        "6": 25
+      },
+      "failures": 110,
+      "failure_rate_pct": 44.72,
+      "turns_generated": 1238,
+      "invalid_format_rate_pct": 0.0,
+      "invalid_word_rate_pct": 0.0,
+      "repeated_guess_game_rate_pct": 0.0,
+      "avg_unique_guesses_per_game": 5.033,
+      "hard_mode_violation_pct": 31.18,
+      "avg_candidates_after_turn": {
+        "1": 74.72,
+        "2": 3.62,
+        "3": 1.25,
+        "4": 1.09,
+        "5": 1.03,
+        "6": 1.02
+      },
+      "avg_decision_margin": 4.1616,
+      "avg_chunks_per_decision": 1.16,
+      "unpruned_chunks": 26,
+      "adapter": "tree_salet_endgame",
+      "ban_repeats": true,
+      "eval_seconds": 751.2
+    },
+    "tree_salet_endgame__noban": {
+      "model": "tree_salet_endgame [noban]",
+      "mode": "constrained",
+      "n_games": 246,
+      "mean_failures_as_7": 5.6992,
+      "mean_solved_only": 4.037,
+      "median": 4.0,
+      "max": 6,
+      "pct_le3": 16.26,
+      "pct_le4": 29.67,
+      "pct_le5": 38.21,
+      "pct_le6": 43.9,
+      "distribution": {
+        "1": 0,
+        "2": 5,
+        "3": 35,
+        "4": 33,
+        "5": 21,
+        "6": 14
+      },
+      "failures": 138,
+      "failure_rate_pct": 56.1,
+      "turns_generated": 1264,
+      "invalid_format_rate_pct": 0.0,
+      "invalid_word_rate_pct": 0.0,
+      "repeated_guess_game_rate_pct": 32.11,
+      "avg_unique_guesses_per_game": 4.577,
+      "hard_mode_violation_pct": 29.59,
+      "avg_candidates_after_turn": {
+        "1": 74.72,
+        "2": 3.62,
+        "3": 1.25,
+        "4": 1.11,
+        "5": 1.05,
+        "6": 1.05
+      },
+      "avg_decision_margin": 4.1231,
+      "avg_chunks_per_decision": 1.14,
+      "unpruned_chunks": 26,
+      "adapter": "tree_salet_endgame",
+      "ban_repeats": false,
+      "eval_seconds": 756.7
+    },
+    "tree_salet__ban": {
+      "model": "tree_salet [ban]",
+      "mode": "constrained",
+      "n_games": 246,
+      "mean_failures_as_7": 5.5122,
+      "mean_solved_only": 4.2273,
+      "median": 4.0,
+      "max": 6,
+      "pct_le3": 17.07,
+      "pct_le4": 32.52,
+      "pct_le5": 43.9,
+      "pct_le6": 53.66,
+      "distribution": {
+        "1": 0,
+        "2": 4,
+        "3": 38,
+        "4": 38,
+        "5": 28,
+        "6": 24
+      },
+      "failures": 114,
+      "failure_rate_pct": 46.34,
+      "turns_generated": 1242,
+      "invalid_format_rate_pct": 0.0,
+      "invalid_word_rate_pct": 0.0,
+      "repeated_guess_game_rate_pct": 0.0,
+      "avg_unique_guesses_per_game": 5.049,
+      "hard_mode_violation_pct": 35.59,
+      "avg_candidates_after_turn": {
+        "1": 74.72,
+        "2": 3.64,
+        "3": 1.22,
+        "4": 1.12,
+        "5": 1.09,
+        "6": 1.04
+      },
+      "avg_decision_margin": 5.0241,
+      "avg_chunks_per_decision": 1.41,
+      "unpruned_chunks": 26,
+      "adapter": "tree_salet",
+      "ban_repeats": true,
+      "eval_seconds": 908.4
+    },
+    "tree_salet__noban": {
+      "model": "tree_salet [noban]",
+      "mode": "constrained",
+      "n_games": 246,
+      "mean_failures_as_7": 5.687,
+      "mean_solved_only": 4.0093,
+      "median": 4.0,
+      "max": 6,
+      "pct_le3": 17.07,
+      "pct_le4": 30.08,
+      "pct_le5": 38.62,
+      "pct_le6": 43.9,
+      "distribution": {
+        "1": 0,
+        "2": 4,
+        "3": 38,
+        "4": 32,
+        "5": 21,
+        "6": 13
+      },
+      "failures": 138,
+      "failure_rate_pct": 56.1,
+      "turns_generated": 1261,
+      "invalid_format_rate_pct": 0.0,
+      "invalid_word_rate_pct": 0.0,
+      "repeated_guess_game_rate_pct": 30.49,
+      "avg_unique_guesses_per_game": 4.537,
+      "hard_mode_violation_pct": 33.39,
+      "avg_candidates_after_turn": {
+        "1": 74.72,
+        "2": 3.64,
+        "3": 1.22,
+        "4": 1.13,
+        "5": 1.09,
+        "6": 1.05
+      },
+      "avg_decision_margin": 5.017,
+      "avg_chunks_per_decision": 1.36,
+      "unpruned_chunks": 26,
+      "adapter": "tree_salet",
+      "ban_repeats": false,
+      "eval_seconds": 890.4
+    }
+  },
+  "classical_baselines": [
+    {
+      "model": "random",
+      "n_games": 246,
+      "mean_failures_as_7": 4.0203,
+      "median": 4.0,
+      "max": 6,
+      "pct_le3": 27.64,
+      "pct_le4": 71.54,
+      "pct_le5": 94.72,
+      "failure_rate_pct": 0.81,
+      "classical": true
+    },
+    {
+      "model": "frequency",
+      "n_games": 246,
+      "mean_failures_as_7": 3.7927,
+      "median": 4.0,
+      "max": 6,
+      "pct_le3": 39.84,
+      "pct_le4": 79.67,
+      "pct_le5": 95.53,
+      "failure_rate_pct": 1.63,
+      "classical": true
+    },
+    {
+      "model": "entropy",
+      "n_games": 246,
+      "mean_failures_as_7": 3.4431,
+      "median": 3.0,
+      "max": 5,
+      "pct_le3": 56.1,
+      "pct_le4": 97.97,
+      "pct_le5": 100.0,
+      "failure_rate_pct": 0.0,
+      "classical": true
+    },
+    {
+      "model": "tree_salet",
+      "n_games": 246,
+      "mean_failures_as_7": 3.4512,
+      "median": 3.0,
+      "max": 5,
+      "pct_le3": 53.66,
+      "pct_le4": 96.75,
+      "pct_le5": 100.0,
+      "failure_rate_pct": 0.0,
+      "classical": true
+    }
+  ],
+  "terminal_probe": {
+    "tree_salet_endgame": {
+      "1": {
+        "n_states": 80,
+        "top1_accuracy_pct": 27.5,
+        "top1_is_candidate_pct": 27.5,
+        "median_rank_of_answer": 4.0,
+        "mean_rank_within_candidates": 1.0,
+        "chance_top1_pct": 0.0077
+      },
+      "2": {
+        "n_states": 30,
+        "top1_accuracy_pct": 16.67,
+        "top1_is_candidate_pct": 40.0,
+        "median_rank_of_answer": 11.0,
+        "mean_rank_within_candidates": 1.533,
+        "chance_top1_pct": 0.0077
+      },
+      "3": {
+        "n_states": 27,
+        "top1_accuracy_pct": 7.41,
+        "top1_is_candidate_pct": 29.63,
+        "median_rank_of_answer": 46.0,
+        "mean_rank_within_candidates": 2.185,
+        "chance_top1_pct": 0.0077
+      }
+    },
+    "tree_salet": {
+      "1": {
+        "n_states": 80,
+        "top1_accuracy_pct": 20.0,
+        "top1_is_candidate_pct": 20.0,
+        "median_rank_of_answer": 7.5,
+        "mean_rank_within_candidates": 1.0,
+        "chance_top1_pct": 0.0077
+      },
+      "2": {
+        "n_states": 30,
+        "top1_accuracy_pct": 6.67,
+        "top1_is_candidate_pct": 26.67,
+        "median_rank_of_answer": 18.0,
+        "mean_rank_within_candidates": 1.633,
+        "chance_top1_pct": 0.0077
+      },
+      "3": {
+        "n_states": 27,
+        "top1_accuracy_pct": 3.7,
+        "top1_is_candidate_pct": 25.93,
+        "median_rank_of_answer": 80.0,
+        "mean_rank_within_candidates": 2.259,
+        "chance_top1_pct": 0.0077
+      }
+    }
+  },
+  "terminal_seen_vs_unseen": {
+    "tree_salet": {
+      "seen_n": 62,
+      "seen_acc_pct": 25.81,
+      "unseen_n": 18,
+      "unseen_acc_pct": 0.0
+    },
+    "tree_salet_endgame": {
+      "seen_n": 62,
+      "seen_acc_pct": 33.87,
+      "unseen_n": 18,
+      "unseen_acc_pct": 5.56
+    }
+  },
+  "openers": {},
+  "disagreement": {},
+  "examples": {},
+  "phase5_reference": {
+    "tree_salet_constrained_noban": 5.687,
+    "tree_salet_constrained_noban_fail": 56.1,
+    "tree_salet_unconstrained": 6.1748,
+    "base_qwen_constrained": 7.0,
+    "classical_entropy": 3.4431,
+    "classical_random": 4.0203,
+    "k1_top1": 20.0,
+    "k1_seen": 33.33,
+    "k1_unseen": 15.25,
+    "k1_median_rank": 7.5
+  },
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.0.0",
+    "peft": "0.19.1",
+    "numpy": "2.0.2",
+    "gpu": "Tesla T4",
+    "fp16": true,
+    "seed": 20260817,
+    "generated_utc": "2026-08-20T13:54:23Z"
+  },
+  "eval_settings": {
+    "constrained_legal_words": 12972,
+    "chunk": 512,
+    "exact_pruning": true,
+    "length_normalise": false,
+    "candidate_list_shown": false,
+    "candidate_count_shown": false,
+    "answer_shown": false,
+    "score": "sum log P(token | prompt, prefix) over ' '+WORD tokens and EOS; argmax over the legal set."
+  }
+}

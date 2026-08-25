@@ -1,0 +1,96 @@
+{
+  "brute_force": {
+    "checked": 300,
+    "mismatches": 0
+  },
+  "counts": {
+    "train": 6000,
+    "validation": 800
+  },
+  "data": "sft_package/data/dpo_v3",
+  "gap_by_family": {
+    "exact_adaptive_decoder_tree": {
+      "competitive": {
+        "max": 5.0,
+        "median": 0.5,
+        "n": 4327,
+        "p90": 3.0
+      },
+      "contrastive": {
+        "max": 2.5,
+        "median": 1.0,
+        "n": 1276,
+        "p90": 2.25
+      }
+    },
+    "full_legal_pool_one_ply_expected_remaining": {
+      "competitive": {
+        "max": 1.0654,
+        "median": 0.2222,
+        "n": 754,
+        "p90": 0.4217
+      },
+      "contrastive": {
+        "max": 5.7358,
+        "median": 0.8571,
+        "n": 443,
+        "p90": 1.4059
+      }
+    }
+  },
+  "holdout_filter": {
+    "dropped": 989,
+    "kept": 6000,
+    "share": 0.1415
+  },
+  "leakage": {
+    "train_rows_naming_holdout": 0,
+    "train_states_touching_holdout": 1525,
+    "train_states_touching_holdout_frac": 0.2542
+  },
+  "recompute": {
+    "BACKWARDS": 0,
+    "TIED_PAIR": 0,
+    "action_space_mismatch": 0,
+    "bad_length": 0,
+    "bucket_mismatch": 0,
+    "chosen_admissible_flag_wrong": 0,
+    "chosen_candidate_flag_wrong": 0,
+    "chosen_illegal": 0,
+    "chosen_not_optimal": 0,
+    "chosen_outside_action_space": 0,
+    "chosen_total_cost_wrong": 0,
+    "chosen_value_wrong": 0,
+    "depth_mismatch": 0,
+    "family_mismatch": 0,
+    "gap_wrong": 0,
+    "guesses_left_mismatch": 0,
+    "n_actions_mismatch": 0,
+    "n_adm_mismatch": 0,
+    "n_cand_mismatch": 0,
+    "n_optimal_mismatch": 0,
+    "not_uppercase": 0,
+    "rejected_admissible_flag_wrong": 0,
+    "rejected_candidate_flag_wrong": 0,
+    "rejected_illegal": 0,
+    "rejected_outside_action_space": 0,
+    "rejected_total_cost_wrong": 0,
+    "rejected_value_wrong": 0,
+    "same_word": 0,
+    "state_hash_mismatch": 0,
+    "state_key_mismatch": 0,
+    "threshold_mismatch": 0,
+    "turn_mismatch": 0
+  },
+  "split": {
+    "prompt_overlap": 0,
+    "state_overlap": 0,
+    "train_states": 6000,
+    "val_states": 800
+  },
+  "verdict": {
+    "failures": [],
+    "passed": true,
+    "warnings": []
+  }
+}

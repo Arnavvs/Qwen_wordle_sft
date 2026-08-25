@@ -1,0 +1,259 @@
+{
+  "adaptive_threshold": 20,
+  "config": {
+    "block_holdout_actions": true,
+    "competitive_frac": 0.75,
+    "exact_contrastive_band_absolute": [
+      1.0,
+      2.5
+    ],
+    "max_per_answer": 8,
+    "proxy_competitive_band_relative": [
+      0.05,
+      0.2
+    ],
+    "proxy_contrastive_band_relative": [
+      0.3,
+      1.0
+    ],
+    "strict_candidate_partition": false
+  },
+  "failure_cost": 7,
+  "format_version": 3,
+  "generated_by": "phase8_dpo_v3/build_dpo_v3_dataset.py",
+  "label_policy": {
+    "chosen": "an exactly-optimal action, spread over tied optima by a state-keyed hash",
+    "never": "two exactly-tied optimal actions paired against each other",
+    "pairs_per_state": 1,
+    "rejected_competitive": "uniform over the best strictly-worse tier",
+    "rejected_contrastive": "exact regime: (1.0, 2.5) mean guesses worse; proxy regime: (0.3, 1.0) relative to best",
+    "restricted_regime": "|admissible| <= 20: exact adaptive-decoder tree, full remaining depth, integer costs",
+    "unrestricted_regime": "|admissible| > 20: exhaustive one-ply E[remaining] over all legal words (proxy)"
+  },
+  "opener": "salet",
+  "produced": {
+    "train": {
+      "100+": 400,
+      "11-100": 1100,
+      "2-10": 4500
+    },
+    "validation": {
+      "100+": 50,
+      "11-100": 150,
+      "2-10": 600
+    }
+  },
+  "rejections": {
+    "train": {
+      "action_is_holdout_answer": 989,
+      "all_actions_optimal": 2214,
+      "answer_cap": 402,
+      "degenerate_state": 8668,
+      "duplicate_state": 17619
+    },
+    "validation": {
+      "all_actions_optimal": 268,
+      "answer_cap": 81,
+      "degenerate_state": 1081,
+      "duplicate_state": 2691
+    }
+  },
+  "requested": {
+    "train": {
+      "100+": 400,
+      "11-100": 1100,
+      "2-10": 4500
+    },
+    "validation": {
+      "100+": 50,
+      "11-100": 150,
+      "2-10": 600
+    }
+  },
+  "rollouts": {
+    "train": 25985,
+    "validation": 3273
+  },
+  "seconds": 464.5,
+  "seed": 20260821,
+  "source_answers": {
+    "train": 2069,
+    "validation": 246
+  },
+  "split_checks": {
+    "prompt_overlap": 0,
+    "state_overlap": 0
+  },
+  "summary": {
+    "train": {
+      "absolute_gap_by_family": {
+        "exact_adaptive_decoder_tree": {
+          "competitive": {
+            "max": 5.0,
+            "mean": 0.8872,
+            "median": 0.5,
+            "n": 3818,
+            "p10": 0.25,
+            "p90": 3.0
+          },
+          "contrastive": {
+            "max": 2.5,
+            "mean": 1.2346,
+            "median": 1.0,
+            "n": 1125,
+            "p10": 1.0,
+            "p90": 2.25
+          },
+          "units": "mean_further_guesses"
+        },
+        "full_legal_pool_one_ply_expected_remaining": {
+          "competitive": {
+            "max": 1.0654,
+            "mean": 0.2622,
+            "median": 0.2222,
+            "n": 665,
+            "p10": 0.1399,
+            "p90": 0.4286
+          },
+          "contrastive": {
+            "max": 5.7358,
+            "mean": 0.9286,
+            "median": 0.8571,
+            "n": 392,
+            "p10": 0.5,
+            "p90": 1.4067
+          },
+          "units": "expected_remaining_candidates"
+        }
+      },
+      "action_space": {
+        "admissible": 4943,
+        "legal": 1057
+      },
+      "bucket": {
+        "100+": 400,
+        "11-100": 1100,
+        "2-10": 4500
+      },
+      "chosen_is_candidate_frac": 0.821,
+      "distinct_ids": 6000,
+      "distinct_prompts": 6000,
+      "distinct_states": 6000,
+      "max_rows_per_state": 1,
+      "mean_actions_per_state": 2290.72,
+      "pair_type": {
+        "competitive": 4483,
+        "contrastive": 1517
+      },
+      "rejected_is_candidate_frac": 0.1483,
+      "relative_gap": {
+        "max": 3.0,
+        "mean": 0.5049,
+        "median": 0.3333,
+        "n": 6000,
+        "p10": 0.125,
+        "p90": 1.0
+      },
+      "rows": 6000,
+      "score_family": {
+        "exact_adaptive_decoder_tree": 4943,
+        "full_legal_pool_one_ply_expected_remaining": 1057
+      },
+      "states_with_tied_optimum_frac": 0.894,
+      "turn": {
+        "2": 110,
+        "3": 2585,
+        "4": 2536,
+        "5": 664,
+        "6": 105
+      }
+    },
+    "validation": {
+      "absolute_gap_by_family": {
+        "exact_adaptive_decoder_tree": {
+          "competitive": {
+            "max": 4.0,
+            "mean": 1.0567,
+            "median": 0.5,
+            "n": 509,
+            "p10": 0.25,
+            "p90": 3.0
+          },
+          "contrastive": {
+            "max": 2.5,
+            "mean": 1.2099,
+            "median": 1.0,
+            "n": 151,
+            "p10": 1.0,
+            "p90": 2.0
+          },
+          "units": "mean_further_guesses"
+        },
+        "full_legal_pool_one_ply_expected_remaining": {
+          "competitive": {
+            "max": 0.8229,
+            "mean": 0.2385,
+            "median": 0.2222,
+            "n": 89,
+            "p10": 0.1282,
+            "p90": 0.3572
+          },
+          "contrastive": {
+            "max": 2.2326,
+            "mean": 0.7958,
+            "median": 0.6667,
+            "n": 51,
+            "p10": 0.4,
+            "p90": 1.2857
+          },
+          "units": "expected_remaining_candidates"
+        }
+      },
+      "action_space": {
+        "admissible": 660,
+        "legal": 140
+      },
+      "bucket": {
+        "100+": 50,
+        "11-100": 150,
+        "2-10": 600
+      },
+      "chosen_is_candidate_frac": 0.8275,
+      "distinct_ids": 800,
+      "distinct_prompts": 800,
+      "distinct_states": 800,
+      "max_rows_per_state": 1,
+      "mean_actions_per_state": 2275.47,
+      "pair_type": {
+        "competitive": 598,
+        "contrastive": 202
+      },
+      "rejected_is_candidate_frac": 0.1375,
+      "relative_gap": {
+        "max": 2.6667,
+        "mean": 0.5604,
+        "median": 0.3333,
+        "n": 800,
+        "p10": 0.125,
+        "p90": 1.0
+      },
+      "rows": 800,
+      "score_family": {
+        "exact_adaptive_decoder_tree": 660,
+        "full_legal_pool_one_ply_expected_remaining": 140
+      },
+      "states_with_tied_optimum_frac": 0.9087,
+      "turn": {
+        "2": 4,
+        "3": 342,
+        "4": 347,
+        "5": 91,
+        "6": 16
+      }
+    }
+  },
+  "tree_nodes": {
+    "train": 23715,
+    "validation": 4716
+  }
+}

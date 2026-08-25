@@ -1,0 +1,138 @@
+{
+  "_comment": [
+    "Profiles for tools/kaggle_run.py. One entry per Kaggle notebook.",
+    "Set 'username' to your Kaggle owner slug, and fill dataset_sources with",
+    "the slugs printed by: python tools/kaggle_run.py doctor",
+    "accelerator: none | t4 | t4x2 | p100 | a100 | l4 | h100",
+    "NOTE: t4x2 gets a SINGLE T4 - the API has no two-GPU option. Every",
+    "notebook here uses one GPU, so this is not a regression, but do not",
+    "expect two."
+  ],
+  "username": "arnavyrr",
+  "dataset_dir": "uploads/kaggle_upload",
+  "dataset_slug": "arnavyrr/wordle-sft-package-v2",
+  "profiles": {
+    "phase1": {
+      "notebook": "phase1_classical/wordle_classical_solver.ipynb",
+      "generator": "phase1_classical/make_notebook.py",
+      "slug": "wordle-phase-1-classical-solver",
+      "title": "Wordle Phase 1 - classical solver",
+      "accelerator": "none",
+      "dataset_sources": [],
+      "enable_internet": true,
+      "expected_minutes": 20
+    },
+    "phase4": {
+      "notebook": "phase4_5_sft_diagnostic/wordle_qwen_sft_kaggle.ipynb",
+      "generator": "phase4_5_sft_diagnostic/make_sft_notebook.py",
+      "slug": "wordle-phase-4-qwen-0-5b-sft",
+      "title": "Wordle Phase 4 - Qwen 0.5B SFT",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/kaggle-adapters-upload"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 240
+    },
+    "phase6": {
+      "notebook": "phase6_endgame/wordle_endgame_sft_kaggle.ipynb",
+      "generator": "phase6_endgame/make_endgame_notebook.py",
+      "slug": "wordle-phase-6-endgame-heavy-sft",
+      "title": "Wordle Phase 6 - endgame-heavy SFT",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/kaggle-adapters-upload"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 240
+    },
+    "phase7": {
+      "notebook": "phase7_constrained/wordle_phase7_kaggle.ipynb",
+      "generator": "phase7_constrained/make_phase7_notebook.py",
+      "slug": "wordle-phase-7-constrained-decoding",
+      "title": "Wordle Phase 7 - constrained decoding",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/kaggle-adapters-upload"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 180
+    },
+    "phase7b": {
+      "notebook": "phase7_constrained/wordle_phase7_sweep_kaggle.ipynb",
+      "generator": "phase7_constrained/make_sweep_notebook.py",
+      "slug": "wordle-phase-7b-adaptive-threshold-sweep",
+      "title": "Wordle Phase 7b - adaptive threshold sweep",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/wordle-adapters-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 120
+    },
+    "phase8": {
+      "notebook": "phase8_dpo/wordle_phase8_dpo_kaggle.ipynb",
+      "generator": "phase8_dpo/make_dpo_notebook.py",
+      "slug": "wordle-phase-8-dpo",
+      "title": "Wordle Phase 8 - DPO",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/wordle-adapters-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 240
+    },
+    "phase9": {
+      "notebook": "phase9_harness/wordle_phase9_harness_kaggle.ipynb",
+      "generator": "phase9_harness/make_harness_notebook.py",
+      "slug": "wordle-phase-9-prompt-harness-sweep",
+      "title": "Wordle Phase 9 - prompt/harness sweep",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/wordle-adapters-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 45,
+      "gate": "Cell 7: sft+baseline on 40 games must open SALET and land near 3.7642 (tolerance 0.60). A wrong opener means the wrong adapter - stop the run.",
+      "resumes": true,
+      "max_runtime_minutes": 90
+    },
+    "phase10": {
+      "notebook": "phase10_crossover/wordle_phase10_crossover_kaggle.ipynb",
+      "generator": "phase10_crossover/make_crossover_notebook.py",
+      "slug": "wordle-phase-10-format-crossover",
+      "title": "Wordle Phase 10 - format crossover",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 90,
+      "max_runtime_minutes": 200,
+      "gate": "Cell 4 must report round-trip ok=19,212 / mismatch=0, and cell 6 must land on 1202 steps like Phase 6. A different step count means the data is not what it should be - stop rather than interpret.",
+      "resumes": false
+    },
+    "phase11": {
+      "notebook": "phase11_grpo/wordle_phase11_grpo_kaggle.ipynb",
+      "generator": "phase11_grpo/make_grpo_notebook.py",
+      "slug": "wordle-phase-11-grpo",
+      "title": "Wordle Phase 11 - GRPO",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/wordle-adapters-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 75,
+      "max_runtime_minutes": 180,
+      "gate": "Cell 3 must load the task set and pass its invariants, and cell 4 must load adapter 'tree_salet_endgame' by basename - never a substitute. The real verdict is the paired 246-game rollout run afterwards by the phase9 harness, which must reproduce 3.7642 for the sft+baseline control.",
+      "resumes": false
+    }
+  }
+}

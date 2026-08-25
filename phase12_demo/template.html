@@ -1,0 +1,501 @@
+<title>Play the Benchmark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#fbfbf9; --surface:#ffffff; --sunk:#f2f3f1;
+  --ink:#14181d; --ink-2:#3d454f; --ink-3:#6b747f;
+  --rule:#e2e4e3; --rule-2:#cbcfcf;
+  --accent:#2b5fd9; --accent-soft:#e8edfb;
+  --tile-g:#6aaa64; --tile-y:#c9b458; --tile-b:#787c7e;
+  --tile-fg:#ffffff;
+  --good:#3f8f4f; --warn:#b07d1a; --bad:#b44b3f;
+  --shadow:0 1px 2px rgba(20,24,29,.06),0 8px 24px -12px rgba(20,24,29,.18);
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101419; --surface:#171c23; --sunk:#1d232b;
+    --ink:#e9ecef; --ink-2:#b3bcc6; --ink-3:#828d99;
+    --rule:#262d36; --rule-2:#39424d;
+    --accent:#7ba3ff; --accent-soft:#1b2740;
+    --tile-b:#5f6469;
+    --good:#6fbf7f; --warn:#d6a54a; --bad:#e0776a;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101419; --surface:#171c23; --sunk:#1d232b;
+  --ink:#e9ecef; --ink-2:#b3bcc6; --ink-3:#828d99;
+  --rule:#262d36; --rule-2:#39424d;
+  --accent:#7ba3ff; --accent-soft:#1b2740;
+  --tile-b:#5f6469;
+  --good:#6fbf7f; --warn:#d6a54a; --bad:#e0776a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 22px 72px}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--accent)}
+
+/* ---------- masthead ---------- */
+.mast{border-bottom:1px solid var(--rule);padding-bottom:20px;margin-bottom:26px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:10px
+}
+h1{font-family:var(--display);font-size:clamp(30px,4.4vw,46px);font-weight:600;letter-spacing:-.015em;line-height:1.08}
+.sub{color:var(--ink-2);max-width:64ch;margin-top:12px}
+.sub strong{color:var(--ink);font-weight:600}
+
+/* ---------- layout ---------- */
+.cols{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:34px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--surface);border:1px solid var(--rule);border-radius:10px;
+  padding:18px;box-shadow:var(--shadow);
+  min-width:0            /* grid items default to min-width:auto and refuse to shrink */
+}
+@media (max-width:420px){
+  .panel{padding:13px}
+  .wrap{padding:22px 12px 56px}
+}
+.panel-h{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--rule)
+}
+.panel-h h2{font-family:var(--body);font-size:13px;font-weight:600;letter-spacing:.02em}
+.panel-h .meta{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+
+/* ---------- board ---------- */
+/* Fluid, not fixed. The panel can be ~300px on a phone; 52px tiles and
+   30px keys overflowed it. Everything below sizes from the container. */
+.board{display:grid;gap:6px;margin:2px 0 14px;width:100%}
+.row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+  width:100%;max-width:296px;margin:0 auto
+}
+.tile{
+  aspect-ratio:1;min-width:0;display:grid;place-items:center;
+  font-family:var(--mono);font-weight:600;font-size:clamp(17px,7vw,24px);
+  border:2px solid var(--rule-2);border-radius:4px;background:transparent;
+  color:var(--ink);text-transform:uppercase;
+  transition:transform .12s ease,background .2s ease,border-color .2s ease
+}
+.tile.filled{border-color:var(--ink-3)}
+.tile.pop{transform:scale(1.06)}
+.tile.G{background:var(--tile-g);border-color:var(--tile-g);color:var(--tile-fg)}
+.tile.Y{background:var(--tile-y);border-color:var(--tile-y);color:var(--tile-fg)}
+.tile.B{background:var(--tile-b);border-color:var(--tile-b);color:var(--tile-fg)}
+.row.shake{animation:shake .32s}
+@keyframes shake{10%,90%{transform:translateX(-2px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-4px)}}
+@media (prefers-reduced-motion:reduce){
+  .tile,.row.shake{transition:none;animation:none}
+}
+
+/* ---------- keyboard ---------- */
+.kb{display:grid;gap:6px;margin-top:4px;width:100%}
+.kb-row{display:flex;gap:4px;justify-content:center;width:100%}
+/* flex:1 1 0 with min-width:0 lets the ten keys of the top row share whatever
+   width there is instead of forcing a 345px minimum and spilling out */
+.key{
+  flex:1 1 0;min-width:0;max-width:44px;
+  font-family:var(--body);font-weight:600;font-size:clamp(10px,2.6vw,12px);
+  height:44px;padding:0;border-radius:5px;
+  border:1px solid var(--rule-2);background:var(--sunk);color:var(--ink);
+  cursor:pointer;text-transform:uppercase
+}
+.key.wide{flex:1.7 1 0;max-width:64px;font-size:clamp(9px,2.2vw,11px);letter-spacing:.03em}
+.key:hover{border-color:var(--ink-3)}
+.key:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.key.G{background:var(--tile-g);border-color:var(--tile-g);color:var(--tile-fg)}
+.key.Y{background:var(--tile-y);border-color:var(--tile-y);color:var(--tile-fg)}
+.key.B{background:var(--tile-b);border-color:var(--tile-b);color:var(--tile-fg);opacity:.72}
+
+/* ---------- controls ---------- */
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+button.btn{
+  font-family:var(--body);font-size:12.5px;font-weight:500;
+  padding:7px 12px;border-radius:6px;border:1px solid var(--rule-2);
+  background:var(--surface);color:var(--ink);cursor:pointer
+}
+button.btn:hover{border-color:var(--ink-3)}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.btn:disabled{opacity:.42;cursor:not-allowed}
+.status{font-family:var(--mono);font-size:12px;color:var(--ink-2);min-height:18px;margin-top:10px}
+.status.win{color:var(--good)} .status.lose{color:var(--bad)}
+
+/* ---------- standings ---------- */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:400;text-align:right;padding:0 0 8px;border-bottom:1px solid var(--rule)
+}
+th.l,td.l{text-align:left}
+td{padding:7px 0;border-bottom:1px solid var(--rule);text-align:right;font-variant-numeric:tabular-nums}
+td.num{font-family:var(--mono)}
+tr.you td{color:var(--accent);font-weight:600}
+tr.you td.l::before{content:"▸ ";}
+.solver-name{font-weight:500}
+.solver-note{display:block;font-size:11.5px;color:var(--ink-3);font-weight:400;line-height:1.35;margin-top:1px}
+.pill{
+  display:inline-block;font-family:var(--mono);font-size:10.5px;padding:1px 6px;
+  border-radius:999px;border:1px solid var(--rule-2);color:var(--ink-3);margin-left:6px
+}
+.pill.model{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- matrix ---------- */
+.matrix-wrap{overflow-x:auto;margin-top:10px}
+table.matrix{font-size:12px;min-width:640px}
+table.matrix th.g{text-align:center;font-size:9.5px;letter-spacing:.06em}
+table.matrix td.c{
+  text-align:center;font-family:var(--mono);cursor:pointer;
+  padding:5px 0;border-bottom:1px solid var(--rule)
+}
+table.matrix td.c:hover{background:var(--accent-soft)}
+table.matrix td.c.cur{box-shadow:inset 0 0 0 1px var(--accent)}
+.s2{color:var(--good);font-weight:600}
+.s3{color:var(--good)}
+.s4{color:var(--ink-2)}
+.s5{color:var(--warn)}
+.s6{color:var(--warn)}
+.s7{color:var(--bad);font-weight:600}
+.sx{color:var(--ink-3)}
+
+/* ---------- notes ---------- */
+.notes{margin-top:34px;padding-top:22px;border-top:1px solid var(--rule);color:var(--ink-2);font-size:13.5px}
+.notes h3{font-family:var(--display);font-size:19px;font-weight:600;margin-bottom:8px}
+.notes p{max-width:68ch;margin:0 0 10px}
+.notes code{font-family:var(--mono);font-size:12px;background:var(--sunk);padding:1px 5px;border-radius:3px}
+.foot{margin-top:26px;font-size:12px;color:var(--ink-3);display:flex;gap:14px;flex-wrap:wrap}
+
+/* ---------- replay overlay ---------- */
+.replay-tag{
+  display:none;font-family:var(--mono);font-size:11px;color:var(--accent);
+  text-align:center;margin-bottom:8px;letter-spacing:.04em
+}
+.replay-tag.on{display:block}
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow">Qwen2.5-0.5B · 20 of 246 held-out answers</div>
+    <h1>Play the Benchmark</h1>
+    <p class="sub">These are twenty real games from the held-out set used to score every solver in
+      the project — a classical entropy solver, a 0.5B language model distilled from it, and the
+      variants in between. <strong>Play them yourself and see where you land</strong>, or skip
+      straight to the results and replay any solver move by move.</p>
+  </header>
+
+  <div class="cols">
+    <!-- ---------------- board ---------------- -->
+    <section class="panel">
+      <div class="panel-h">
+        <h2 id="gameLabel">Game 1 of 20</h2>
+        <span class="meta" id="gameNav"></span>
+      </div>
+      <div class="replay-tag" id="replayTag"></div>
+      <div class="board" id="board"></div>
+      <div class="status" id="status">Guess the word in six tries.</div>
+      <div class="kb" id="kb"></div>
+      <div class="bar">
+        <button class="btn" id="prevBtn">← Prev</button>
+        <button class="btn" id="nextBtn">Next →</button>
+        <button class="btn" id="revealBtn">Reveal answer</button>
+        <button class="btn" id="resetBtn">Reset all</button>
+      </div>
+    </section>
+
+    <!-- ---------------- standings ---------------- -->
+    <section class="panel">
+      <div class="panel-h">
+        <h2>Standings</h2>
+        <span class="meta" id="standingsMeta"></span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="l">Solver</th>
+            <th>This game</th>
+            <th>Mean, 20</th>
+            <th>Mean, 246</th>
+          </tr>
+        </thead>
+        <tbody id="standings"></tbody>
+      </table>
+
+      <div class="panel-h" style="margin-top:26px">
+        <h2>Every game, every solver</h2>
+        <span class="meta">click a cell to replay it</span>
+      </div>
+      <div class="matrix-wrap">
+        <table class="matrix">
+          <thead><tr id="matrixHead"></tr></thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes">
+    <h3>How to read this</h3>
+    <p><strong>Scores are guesses used; a failed game counts as 7.</strong> Lower is better. The
+      twenty games are stratified by how hard the language model found them, so the set deliberately
+      includes one it solved in two and one it failed outright — a random twenty would be almost all
+      threes and fours and would separate nothing.</p>
+    <p>The model rows are not re-simulated for this page. They are the exact per-game records the
+      published paired tests were computed from, so nothing here can disagree with the reported
+      numbers. The classical solvers had no per-game record on disk, so they were replayed against
+      these same answers through the project's own <code>play_game</code>.</p>
+    <p><strong>Twenty games is not enough to separate these solvers.</strong> The standard error on
+      a 20-game mean is roughly 0.2 guesses, which is wider than most of the gaps in the table. The
+      <em>Mean, 246</em> column is the real measurement; the 20-game column is there so your own
+      score has something to sit beside. Treat a win over the model on twenty games as a fun result,
+      not a finding.</p>
+    <p>The one column that is a genuine finding: the 0.5B model at <strong>3.7642</strong> sits
+      between classical <code>frequency</code> and classical <code>random</code>, and
+      <strong>0.32</strong> behind classical <code>entropy</code> — a gap that four separate
+      attempts failed to close.</p>
+    <div class="foot">
+      <span>Source: <a href="https://github.com/Arnavvs/Qwen_wordle_sft">Arnavvs/Qwen_wordle_sft</a></span>
+      <span>Progress saved in this browser only.</span>
+    </div>
+  </section>
+</div>
+
+<script>
+const DATA = __DEMO_DATA__;
+const N = DATA.n_games, MAXG = 6, YOU = "You";
+
+/* Two-pass feedback with duplicate handling — must match the project's
+   wordle_solver.feedback exactly, or every comparison on this page is wrong.
+   Greens are consumed first; each yellow then draws from what is left. */
+function feedback(guess, answer){
+  const res = ["B","B","B","B","B"], left = {};
+  for(let i=0;i<5;i++){
+    if(guess[i]===answer[i]) res[i]="G";
+    else left[answer[i]] = (left[answer[i]]||0)+1;
+  }
+  for(let i=0;i<5;i++){
+    if(res[i]==="G") continue;
+    const c=guess[i];
+    if(left[c]>0){ res[i]="Y"; left[c]--; }
+  }
+  return res.join("");
+}
+
+const LEGAL = new Set();
+for(let i=0;i<DATA.legal.length;i+=5) LEGAL.add(DATA.legal.slice(i,i+5));
+
+const SOLVERS = Object.keys(DATA.solvers);
+const KEY = "wordle-bench-v1";
+let st = load();
+let cur = 0, replay = null;
+
+function blank(){ return {games:Array.from({length:N},()=>({guesses:[],done:false,won:false}))}; }
+function load(){
+  try{ const r=JSON.parse(localStorage.getItem(KEY));
+       if(r && r.games && r.games.length===N) return r; }catch(e){}
+  return blank();
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+
+const $ = id => document.getElementById(id);
+const g = () => st.games[cur];
+const answer = () => DATA.answers[cur];
+const youScore = i => { const x=st.games[i]; if(!x.done) return null;
+                        return x.won ? x.guesses.length : 7; };
+
+/* ---------------- board ---------------- */
+function drawBoard(){
+  const b=$("board"); b.innerHTML="";
+  const shown = replay ? replay.guesses : g().guesses;
+  const typing = replay ? "" : cur_typed;
+  for(let r=0;r<MAXG;r++){
+    const row=document.createElement("div"); row.className="row"; row.dataset.r=r;
+    const word = shown[r];
+    for(let c=0;c<5;c++){
+      const t=document.createElement("div"); t.className="tile";
+      if(word){ t.textContent=word[c]; t.classList.add(feedback(word,answer())[c]); }
+      else if(r===shown.length && typing[c]){ t.textContent=typing[c]; t.classList.add("filled"); }
+      row.appendChild(t);
+    }
+    b.appendChild(row);
+  }
+  drawKeys(shown);
+}
+function drawKeys(shown){
+  const best={}, rank={B:0,Y:1,G:2};
+  for(const w of shown){ const f=feedback(w,answer());
+    for(let i=0;i<5;i++){ const c=w[i];
+      if(best[c]===undefined || rank[f[i]]>rank[best[c]]) best[c]=f[i]; } }
+  const rows=["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"];
+  const kb=$("kb"); kb.innerHTML="";
+  rows.forEach((r,ri)=>{
+    const d=document.createElement("div"); d.className="kb-row";
+    if(ri===2){ d.appendChild(mkKey("Enter","wide")); }
+    for(const c of r) d.appendChild(mkKey(c,"",best[c]));
+    if(ri===2){ d.appendChild(mkKey("⌫","wide")); }
+    kb.appendChild(d);
+  });
+}
+function mkKey(label,extra,state){
+  const b=document.createElement("button");
+  b.className="key "+(extra||"")+(state?" "+state:"");
+  b.textContent=label; b.type="button";
+  b.addEventListener("click",()=>press(label));
+  return b;
+}
+
+let cur_typed="";
+function press(k){
+  if(replay || g().done) return;
+  if(k==="Enter") return submit();
+  if(k==="⌫"||k==="Backspace"){ cur_typed=cur_typed.slice(0,-1); return drawBoard(); }
+  if(/^[A-Za-z]$/.test(k) && cur_typed.length<5){ cur_typed+=k.toUpperCase(); drawBoard(); }
+}
+function submit(){
+  const w=cur_typed;
+  if(w.length<5) return flash("Five letters needed.");
+  if(!LEGAL.has(w)) return flash(`${w} is not in the word list.`);
+  g().guesses.push(w); cur_typed="";
+  if(w===answer()){ g().done=true; g().won=true; }
+  else if(g().guesses.length>=MAXG){ g().done=true; }
+  save(); render();
+}
+function flash(msg){
+  const rows=$("board").children, r=rows[g().guesses.length];
+  if(r){ r.classList.add("shake"); setTimeout(()=>r.classList.remove("shake"),340); }
+  $("status").textContent=msg;
+}
+
+/* ---------------- replay ---------------- */
+function startReplay(name,i){
+  cur=i; cur_typed=""; replay={name,guesses:[]};
+  const full=DATA.solvers[name].games[i].guesses;
+  render();
+  let k=0;
+  const step=()=>{
+    if(!replay) return;
+    replay.guesses=full.slice(0,++k);
+    render();
+    if(k<full.length) setTimeout(step,420);
+  };
+  setTimeout(step,180);
+}
+function stopReplay(){ replay=null; render(); }
+
+/* ---------------- render ---------------- */
+function render(){
+  $("gameLabel").textContent=`Game ${cur+1} of ${N}`;
+  $("gameNav").textContent=`answer ${g().done||replay?answer():"·····"}`;
+  $("replayTag").className="replay-tag"+(replay?" on":"");
+  if(replay) $("replayTag").textContent=`replaying — ${replay.name} · click Reset view to play`;
+  $("revealBtn").textContent = replay ? "Reset view" : "Reveal answer";
+  $("prevBtn").disabled = cur===0; $("nextBtn").disabled = cur===N-1;
+
+  const s=$("status");
+  if(replay){ const sc=DATA.solvers[replay.name].games[cur].score;
+    s.className="status"; s.textContent=`${replay.name} — ${sc===7?"failed":sc+" guesses"}`; }
+  else if(g().done && g().won){ s.className="status win";
+    s.textContent=`Solved in ${g().guesses.length}.`; }
+  else if(g().done){ s.className="status lose"; s.textContent=`Out of guesses — ${answer()}.`; }
+  else { s.className="status"; s.textContent=`Guess the word in six tries.`; }
+
+  drawBoard(); drawStandings(); drawMatrix();
+}
+
+function meanOf(name){
+  const done=[...Array(N).keys()].filter(i=>st.games[i].done);
+  if(name===YOU) return done.length? done.reduce((a,i)=>a+youScore(i),0)/done.length : null;
+  return done.length? done.reduce((a,i)=>a+DATA.solvers[name].games[i].score,0)/done.length : null;
+}
+function fullMean(name){
+  if(name===YOU) return null;
+  return DATA.solvers[name].games.reduce((a,x)=>a+x.score,0)/N;
+}
+
+function drawStandings(){
+  const rows=SOLVERS.map(n=>({name:n,...DATA.solvers[n]}));
+  const done=st.games.filter(x=>x.done).length;
+  $("standingsMeta").textContent = done? `${done}/${N} played` : "nothing played yet";
+
+  const list=rows.map(r=>({
+    name:r.name, note:r.note, kind:r.kind,
+    here:r.games[cur].score, m20:meanOf(r.name), m246:r.mean246,
+    full:fullMean(r.name)
+  }));
+  if(done) list.push({name:YOU,note:"your score on the games you have finished",
+                      kind:"you", here:youScore(cur), m20:meanOf(YOU), m246:null, full:null});
+  list.sort((a,b)=> (a.full??a.m20??99) - (b.full??b.m20??99));
+
+  $("standings").innerHTML = list.map(r=>`
+    <tr class="${r.name===YOU?"you":""}">
+      <td class="l"><span class="solver-name">${r.name}</span>${
+        r.kind==="model"?'<span class="pill model">model</span>':""}
+        <span class="solver-note">${r.note}</span></td>
+      <td class="num">${r.here==null?"—":(r.here===7?"fail":r.here)}</td>
+      <td class="num">${r.m20==null?"—":r.m20.toFixed(2)}</td>
+      <td class="num">${r.m246==null?"—":r.m246.toFixed(4)}</td>
+    </tr>`).join("");
+}
+
+function cls(s){ return s==null?"sx":"s"+s; }
+function drawMatrix(){
+  $("matrixHead").innerHTML = '<th class="l">Solver</th>' +
+    [...Array(N).keys()].map(i=>`<th class="g">${i+1}</th>`).join("") + '<th>Σ</th>';
+  const body = SOLVERS.map(n=>{
+    const gs=DATA.solvers[n].games;
+    return `<tr><td class="l">${n}</td>` + gs.map((x,i)=>
+      `<td class="c ${cls(x.score)} ${i===cur?"cur":""}" data-n="${n}" data-i="${i}"
+          title="replay ${n} on game ${i+1}">${x.score===7?"×":x.score}</td>`).join("") +
+      `<td class="num">${(gs.reduce((a,x)=>a+x.score,0)/N).toFixed(2)}</td></tr>`;
+  }).join("");
+  const mine = st.games.map((x,i)=>{
+    const s=youScore(i);
+    return `<td class="c ${cls(s)} ${i===cur?"cur":""}" data-you="${i}"
+        title="go to game ${i+1}">${s==null?"·":(s===7?"×":s)}</td>`;
+  }).join("");
+  const m=meanOf(YOU);
+  $("matrixBody").innerHTML = body +
+    `<tr class="you"><td class="l">You</td>${mine}<td class="num">${m==null?"—":m.toFixed(2)}</td></tr>`;
+
+  $("matrixBody").querySelectorAll("td.c").forEach(td=>{
+    td.addEventListener("click",()=>{
+      if(td.dataset.you!==undefined){ cur=+td.dataset.you; replay=null; cur_typed=""; render(); }
+      else startReplay(td.dataset.n, +td.dataset.i);
+    });
+  });
+}
+
+/* ---------------- controls ---------------- */
+$("prevBtn").addEventListener("click",()=>{ if(cur>0){cur--;replay=null;cur_typed="";render();} });
+$("nextBtn").addEventListener("click",()=>{ if(cur<N-1){cur++;replay=null;cur_typed="";render();} });
+$("revealBtn").addEventListener("click",()=>{
+  if(replay) return stopReplay();
+  if(!g().done){ g().done=true; g().won=false; save(); }
+  render();
+});
+$("resetBtn").addEventListener("click",()=>{
+  if(confirm("Clear your results for all 20 games?")){ st=blank(); save(); cur=0; replay=null; cur_typed=""; render(); }
+});
+document.addEventListener("keydown",e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.key==="ArrowLeft") return $("prevBtn").click();
+  if(e.key==="ArrowRight") return $("nextBtn").click();
+  if(e.key==="Enter"||e.key==="Backspace"||/^[a-zA-Z]$/.test(e.key)){ e.preventDefault(); press(e.key); }
+});
+
+render();
+</script>

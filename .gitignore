@@ -1,0 +1,52 @@
+# --- environments -----------------------------------------------------------
+# 1.9 GB conda env living inside the project. Rebuild: conda env create -f environment.yml
+.conda/
+venv/
+.venv/
+
+# --- caches -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Kaggle run staging -----------------------------------------------------
+# Staged notebook copies, downloaded kernel outputs, and the run journal.
+# All reproducible; the journal is local bookkeeping, not research evidence.
+.kaggle_runs/
+
+# --- model weights ----------------------------------------------------------
+# LoRA adapters (~34 MB each) and optimizer state (~67 MB each). The adapters
+# are the real artifacts and live on Kaggle as `arnavyrr/kaggle-adapters-upload`;
+# optimizer.pt is resume state with no value once training has finished.
+*.safetensors
+*.pt
+*.bin
+results/wordle_sft_results/
+results/results_reconstructed/
+
+# --- archives ---------------------------------------------------------------
+# results/wordle_sft_results.zip alone is 657 MB and duplicates the directory
+# beside it.
+*.zip
+
+# --- large generated data ---------------------------------------------------
+# Regenerable, and already published as Kaggle datasets
+# (arnavyrr/wordle-sft-package-v2). Excluded to keep clones small, NOT because
+# they are disposable - see tools/prepare_kaggle_dataset.py to rebuild.
+uploads/
+# 30 MB, ~50 s to rebuild (trailing comments are not allowed on a pattern line)
+artifacts/feedback_matrix.npy
+trajectories/
+trajectories_with_count/
+sft_package/data/
+
+# --- kept deliberately ------------------------------------------------------
+# Everything else is tracked: source, notebooks, notebook generators, configs,
+# docs, tests, logs/, and every results/*.json. The JSON results are the
+# experimental record and must stay in git.
+
+# --- os ---------------------------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store

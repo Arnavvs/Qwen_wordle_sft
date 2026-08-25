@@ -1,0 +1,17 @@
+{
+  "name": "tree_soare_disagreement_x20",
+  "description": "Tree policy with its disagreement states amplified 20x, so the ~1% of decisions that separate it from entropy are not swamped by the 99% both agree on.",
+  "seed": 20260817,
+  "dedup": false,
+  "shuffle": true,
+  "components": [
+    {
+      "source": "data/tree_soare/train.jsonl",
+      "repeat": 1
+    },
+    {
+      "source": "data/disagreement/tree_soare.jsonl",
+      "repeat": 20
+    }
+  ]
+}

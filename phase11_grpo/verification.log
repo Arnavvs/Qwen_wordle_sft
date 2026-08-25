@@ -1,0 +1,73 @@
+========================================================================
+GRPO TASK SET VERIFICATION
+========================================================================
+
+A. STRUCTURE
+  [PASS] train present and non-empty  3150 tasks
+  [PASS] train: one task per state  max 1
+  [PASS] train: ids unique
+  [PASS] train: prompts unique
+  [PASS] validation present and non-empty  380 tasks
+  [PASS] validation: one task per state  max 1
+  [PASS] validation: ids unique
+  [PASS] validation: prompts unique
+
+B. PROMPT HYGIENE (every task)
+  [PASS] prompt never contains: candidate count
+  [PASS] prompt never contains: candidate list
+  [PASS] prompt never contains: admissible count
+  [PASS] prompt never contains: values/rewards
+  [PASS] no prompt history contains a solved (GGGGG) line
+
+C-F. RE-DERIVE EVERY TASK FROM ITS OWN PROMPT
+  [PASS] turn
+  [PASS] n_cand
+  [PASS] n_adm
+  [PASS] bucket
+  [PASS] action_space
+  [PASS] state_key
+  [PASS] state_hash
+  [PASS] illegal_action
+  [PASS] dup_action
+  [PASS] len_mismatch
+  [PASS] n_actions
+  [PASS] not_upper
+  [PASS] every action is inside the decoder's action space
+  [PASS] family_wrong
+  [PASS] exact_flag_wrong
+  [PASS] every value recomputed independently and matches
+  [PASS] restricted tasks expose the full admissible set
+  [PASS] values are sorted ascending (best first)
+  [PASS] no task where all actions are equal (no gradient)
+  [PASS] best_value_wrong
+  [PASS] n_optimal_wrong
+       (2965 exact-tree tasks, 565 one-ply)
+
+G. TRAIN / VALIDATION SEPARATION
+  [PASS] no shared state  0 shared
+  [PASS] no shared prompt
+  [PASS] no shared source answer
+  [PASS] every train task came from a TRAIN answer
+  [PASS] every validation task came from a HELD-OUT answer
+
+H. ANSWER LEAKAGE
+  [PASS] no TRAIN task lists a held-out answer as an action  0 actions
+
+I. DISTRIBUTION
+  train: 3150 tasks
+    buckets   : {'100+': 150, '11-100': 500, '2-10': 2500}
+    exact     : 2639/3150
+    actions   : median 7  mean 13.0
+    tied optimum in 89.5% of tasks
+    value spread: median 1.0000  p90 2.5000
+  validation: 380 tasks
+    buckets   : {'100+': 20, '11-100': 60, '2-10': 300}
+    exact     : 326/380
+    actions   : median 7  mean 12.8
+    tied optimum in 87.6% of tasks
+    value spread: median 1.0000  p90 2.3333
+
+========================================================================
+VERDICT: ALL HARD CHECKS PASSED
+========================================================================
+audit written to sft_package/data/grpo_tasks\audit.json

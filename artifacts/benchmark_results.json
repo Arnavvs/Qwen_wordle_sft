@@ -1,0 +1,1280 @@
+{
+  "summaries": [
+    {
+      "strategy": "random",
+      "n_games": 2315,
+      "opening_guess": null,
+      "mean_guesses_solved_only": 4.0258885476086,
+      "mean_score_failures_penalized": 4.072138228941685,
+      "median_guesses": 4.0,
+      "std_guesses": 0.9668501430739022,
+      "min_guesses": 2,
+      "max_guesses": 6,
+      "n_solved": 2279,
+      "n_failed": 36,
+      "solve_rate_pct": 98.44492440604752,
+      "failure_rate_pct": 1.5550755939524838,
+      "distribution_counts": {
+        "1": 0,
+        "2": 95,
+        "3": 588,
+        "4": 922,
+        "5": 511,
+        "6": 163
+      },
+      "distribution_pct": {
+        "1": 0.0,
+        "2": 4.103671706263499,
+        "3": 25.399568034557234,
+        "4": 39.827213822894166,
+        "5": 22.07343412526998,
+        "6": 7.041036717062635
+      },
+      "failures": [
+        "boozy",
+        "bound",
+        "fling",
+        "foggy",
+        "gawky",
+        "gayer",
+        "grate",
+        "hater",
+        "homer",
+        "horse",
+        "hussy",
+        "jazzy",
+        "joker",
+        "lager",
+        "least",
+        "madam",
+        "mover",
+        "payer",
+        "poker",
+        "pound",
+        "prize",
+        "prone",
+        "prove",
+        "ridge",
+        "safer",
+        "shame",
+        "sight",
+        "state",
+        "stung",
+        "swami",
+        "trice",
+        "udder",
+        "vowel",
+        "wacky",
+        "wound",
+        "wreak"
+      ],
+      "wall_s": 0.16650019999360666,
+      "ms_per_game": 0.07192233261062922
+    },
+    {
+      "strategy": "frequency",
+      "n_games": 2315,
+      "opening_guess": "stare",
+      "mean_guesses_solved_only": 3.7459483136224265,
+      "mean_score_failures_penalized": 3.790928725701944,
+      "median_guesses": 4.0,
+      "std_guesses": 0.9183707952525203,
+      "min_guesses": 1,
+      "max_guesses": 6,
+      "n_solved": 2283,
+      "n_failed": 32,
+      "solve_rate_pct": 98.61771058315335,
+      "failure_rate_pct": 1.3822894168466522,
+      "distribution_counts": {
+        "1": 1,
+        "2": 132,
+        "3": 833,
+        "4": 888,
+        "5": 338,
+        "6": 91
+      },
+      "distribution_pct": {
+        "1": 0.04319654427645788,
+        "2": 5.70194384449244,
+        "3": 35.98272138228942,
+        "4": 38.3585313174946,
+        "5": 14.600431965442764,
+        "6": 3.9308855291576674
+      },
+      "failures": [
+        "boxer",
+        "brook",
+        "catch",
+        "eager",
+        "fence",
+        "found",
+        "freed",
+        "frown",
+        "gazer",
+        "graze",
+        "hatch",
+        "jaunt",
+        "jazzy",
+        "joker",
+        "kitty",
+        "krill",
+        "maker",
+        "riper",
+        "river",
+        "roger",
+        "rover",
+        "sever",
+        "shave",
+        "taste",
+        "tight",
+        "vaunt",
+        "wafer",
+        "watch",
+        "waver",
+        "weave",
+        "willy",
+        "wound"
+      ],
+      "wall_s": 0.1375844000140205,
+      "ms_per_game": 0.059431706269555296
+    },
+    {
+      "strategy": "entropy",
+      "n_games": 2315,
+      "opening_guess": "soare",
+      "mean_guesses_solved_only": 3.464362850971922,
+      "mean_score_failures_penalized": 3.464362850971922,
+      "median_guesses": 3.0,
+      "std_guesses": 0.5864392113958348,
+      "min_guesses": 2,
+      "max_guesses": 6,
+      "n_solved": 2315,
+      "n_failed": 0,
+      "solve_rate_pct": 100.0,
+      "failure_rate_pct": 0.0,
+      "distribution_counts": {
+        "1": 0,
+        "2": 44,
+        "3": 1217,
+        "4": 990,
+        "5": 63,
+        "6": 1
+      },
+      "distribution_pct": {
+        "1": 0.0,
+        "2": 1.900647948164147,
+        "3": 52.570194384449245,
+        "4": 42.76457883369331,
+        "5": 2.7213822894168467,
+        "6": 0.04319654427645788
+      },
+      "failures": [],
+      "wall_s": 212.3318813999649,
+      "ms_per_game": 91.72003516197188
+    },
+    {
+      "strategy": "expected",
+      "n_games": 2315,
+      "opening_guess": "roate",
+      "mean_guesses_solved_only": 3.4812095032397408,
+      "mean_score_failures_penalized": 3.4812095032397408,
+      "median_guesses": 3.0,
+      "std_guesses": 0.5753254737745876,
+      "min_guesses": 2,
+      "max_guesses": 5,
+      "n_solved": 2315,
+      "n_failed": 0,
+      "solve_rate_pct": 100.0,
+      "failure_rate_pct": 0.0,
+      "distribution_counts": {
+        "1": 0,
+        "2": 55,
+        "3": 1130,
+        "4": 1091,
+        "5": 39,
+        "6": 0
+      },
+      "distribution_pct": {
+        "1": 0.0,
+        "2": 2.375809935205184,
+        "3": 48.81209503239741,
+        "4": 47.12742980561555,
+        "5": 1.6846652267818574,
+        "6": 0.0
+      },
+      "failures": [],
+      "wall_s": 204.73014420003165,
+      "ms_per_game": 88.43634738662274
+    },
+    {
+      "strategy": "minimax",
+      "n_games": 2315,
+      "opening_guess": "arise",
+      "mean_guesses_solved_only": 3.5732181425485963,
+      "mean_score_failures_penalized": 3.5732181425485963,
+      "median_guesses": 4.0,
+      "std_guesses": 0.625149774565045,
+      "min_guesses": 1,
+      "max_guesses": 6,
+      "n_solved": 2315,
+      "n_failed": 0,
+      "solve_rate_pct": 100.0,
+      "failure_rate_pct": 0.0,
+      "distribution_counts": {
+        "1": 1,
+        "2": 53,
+        "3": 990,
+        "4": 1162,
+        "5": 107,
+        "6": 2
+      },
+      "distribution_pct": {
+        "1": 0.04319654427645788,
+        "2": 2.289416846652268,
+        "3": 42.76457883369331,
+        "4": 50.19438444924406,
+        "5": 4.622030237580994,
+        "6": 0.08639308855291576
+      },
+      "failures": [],
+      "wall_s": 24648.19870040001,
+      "ms_per_game": 10647.170064967608
+    },
+    {
+      "strategy": "hybrid",
+      "n_games": 2315,
+      "opening_guess": "raise",
+      "mean_guesses_solved_only": 3.4812095032397408,
+      "mean_score_failures_penalized": 3.4812095032397408,
+      "median_guesses": 3.0,
+      "std_guesses": 0.5981578655018815,
+      "min_guesses": 1,
+      "max_guesses": 5,
+      "n_solved": 2315,
+      "n_failed": 0,
+      "solve_rate_pct": 100.0,
+      "failure_rate_pct": 0.0,
+      "distribution_counts": {
+        "1": 1,
+        "2": 57,
+        "3": 1149,
+        "4": 1043,
+        "5": 65,
+        "6": 0
+      },
+      "distribution_pct": {
+        "1": 0.04319654427645788,
+        "2": 2.462203023758099,
+        "3": 49.63282937365011,
+        "4": 45.05399568034557,
+        "5": 2.8077753779697625,
+        "6": 0.0
+      },
+      "failures": [],
+      "wall_s": 316.46477429999504,
+      "ms_per_game": 136.70184634988988
+    }
+  ],
+  "candidate_trajectories": {
+    "random": {
+      "1": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 214.3304535637149,
+        "median_remaining": 136.0,
+        "max_remaining": 1325,
+        "mean_bits_remaining": 6.662130885189995
+      },
+      "2": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 19.496760259179265,
+        "median_remaining": 8.0,
+        "max_remaining": 355,
+        "mean_bits_remaining": 2.977385655588601
+      },
+      "3": {
+        "n_games_reaching_turn": 2220,
+        "mean_remaining": 3.01036036036036,
+        "median_remaining": 1.0,
+        "max_remaining": 30,
+        "mean_bits_remaining": 0.9358284612173225
+      },
+      "4": {
+        "n_games_reaching_turn": 1632,
+        "mean_remaining": 1.4411764705882353,
+        "median_remaining": 1.0,
+        "max_remaining": 18,
+        "mean_bits_remaining": 0.2983194897993289
+      },
+      "5": {
+        "n_games_reaching_turn": 710,
+        "mean_remaining": 1.1732394366197183,
+        "median_remaining": 1.0,
+        "max_remaining": 9,
+        "mean_bits_remaining": 0.12590925862548166
+      },
+      "6": {
+        "n_games_reaching_turn": 199,
+        "mean_remaining": 1.1055276381909547,
+        "median_remaining": 1.0,
+        "max_remaining": 7,
+        "mean_bits_remaining": 0.08531296443969806
+      }
+    },
+    "frequency": {
+      "1": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 71.29460043196545,
+        "median_remaining": 51.0,
+        "max_remaining": 227,
+        "mean_bits_remaining": 5.36951644298667
+      },
+      "2": {
+        "n_games_reaching_turn": 2314,
+        "mean_remaining": 5.7009507346585995,
+        "median_remaining": 3.0,
+        "max_remaining": 35,
+        "mean_bits_remaining": 1.8553638101112313
+      },
+      "3": {
+        "n_games_reaching_turn": 2182,
+        "mean_remaining": 1.8735105407882677,
+        "median_remaining": 1.0,
+        "max_remaining": 13,
+        "mean_bits_remaining": 0.5401908953235781
+      },
+      "4": {
+        "n_games_reaching_turn": 1349,
+        "mean_remaining": 1.3098591549295775,
+        "median_remaining": 1.0,
+        "max_remaining": 9,
+        "mean_bits_remaining": 0.2198529974044725
+      },
+      "5": {
+        "n_games_reaching_turn": 461,
+        "mean_remaining": 1.1995661605206074,
+        "median_remaining": 1.0,
+        "max_remaining": 5,
+        "mean_bits_remaining": 0.15861044572399943
+      },
+      "6": {
+        "n_games_reaching_turn": 123,
+        "mean_remaining": 1.146341463414634,
+        "median_remaining": 1.0,
+        "max_remaining": 3,
+        "mean_bits_remaining": 0.12609573174249541
+      }
+    },
+    "entropy": {
+      "1": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 62.30107991360691,
+        "median_remaining": 42.0,
+        "max_remaining": 183,
+        "mean_bits_remaining": 5.290836367768742
+      },
+      "2": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 3.3464362850971923,
+        "median_remaining": 2.0,
+        "max_remaining": 21,
+        "mean_bits_remaining": 1.1826820493658141
+      },
+      "3": {
+        "n_games_reaching_turn": 2271,
+        "mean_remaining": 1.0704535446939674,
+        "median_remaining": 1.0,
+        "max_remaining": 5,
+        "mean_bits_remaining": 0.05746521068428794
+      },
+      "4": {
+        "n_games_reaching_turn": 1054,
+        "mean_remaining": 1.0018975332068312,
+        "median_remaining": 1.0,
+        "max_remaining": 2,
+        "mean_bits_remaining": 0.0018975332068311196
+      },
+      "5": {
+        "n_games_reaching_turn": 64,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      },
+      "6": {
+        "n_games_reaching_turn": 1,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      }
+    },
+    "expected": {
+      "1": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 60.42462203023758,
+        "median_remaining": 50.0,
+        "max_remaining": 195,
+        "mean_bits_remaining": 5.294017153855628
+      },
+      "2": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 3.1451403887688985,
+        "median_remaining": 2.0,
+        "max_remaining": 18,
+        "mean_bits_remaining": 1.2058144924043455
+      },
+      "3": {
+        "n_games_reaching_turn": 2260,
+        "mean_remaining": 1.0345132743362833,
+        "median_remaining": 1.0,
+        "max_remaining": 3,
+        "mean_bits_remaining": 0.032860470135615216
+      },
+      "4": {
+        "n_games_reaching_turn": 1130,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      },
+      "5": {
+        "n_games_reaching_turn": 39,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      }
+    },
+    "minimax": {
+      "1": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 63.72570194384449,
+        "median_remaining": 51.0,
+        "max_remaining": 168,
+        "mean_bits_remaining": 5.355856777261595
+      },
+      "2": {
+        "n_games_reaching_turn": 2314,
+        "mean_remaining": 3.8167675021607606,
+        "median_remaining": 3.0,
+        "max_remaining": 16,
+        "mean_bits_remaining": 1.4363994913448925
+      },
+      "3": {
+        "n_games_reaching_turn": 2261,
+        "mean_remaining": 1.1096859796550198,
+        "median_remaining": 1.0,
+        "max_remaining": 6,
+        "mean_bits_remaining": 0.09611822756853251
+      },
+      "4": {
+        "n_games_reaching_turn": 1271,
+        "mean_remaining": 1.003147128245476,
+        "median_remaining": 1.0,
+        "max_remaining": 2,
+        "mean_bits_remaining": 0.003147128245476003
+      },
+      "5": {
+        "n_games_reaching_turn": 109,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      },
+      "6": {
+        "n_games_reaching_turn": 2,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      }
+    },
+    "hybrid": {
+      "1": {
+        "n_games_reaching_turn": 2315,
+        "mean_remaining": 61.00086393088553,
+        "median_remaining": 43.0,
+        "max_remaining": 168,
+        "mean_bits_remaining": 5.2988867873261185
+      },
+      "2": {
+        "n_games_reaching_turn": 2314,
+        "mean_remaining": 3.3716508210890233,
+        "median_remaining": 2.0,
+        "max_remaining": 16,
+        "mean_bits_remaining": 1.2295153907402927
+      },
+      "3": {
+        "n_games_reaching_turn": 2257,
+        "mean_remaining": 1.0638015064244573,
+        "median_remaining": 1.0,
+        "max_remaining": 5,
+        "mean_bits_remaining": 0.05622235400513119
+      },
+      "4": {
+        "n_games_reaching_turn": 1108,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      },
+      "5": {
+        "n_games_reaching_turn": 65,
+        "mean_remaining": 1.0,
+        "median_remaining": 1.0,
+        "max_remaining": 1,
+        "mean_bits_remaining": 0.0
+      }
+    }
+  },
+  "generated_utc": "2026-08-17T06:36:11Z",
+  "n_answers_evaluated": 2315,
+  "config": {
+    "max_guesses": 6,
+    "strategy": "hybrid",
+    "seed": 20260817,
+    "guess_pool": "full",
+    "adaptive_threshold": 2,
+    "endgame_candidates": 2,
+    "force_candidate_on_last_guess": true,
+    "opening_guess": null,
+    "entropy_weight": 1.0,
+    "minimax_weight": 0.25,
+    "expected_weight": 0.25,
+    "answer_bonus_weight": 1.0
+  },
+  "first_guess_top20": {
+    "entropy": [
+      {
+        "rank": 1,
+        "word": "soare",
+        "entropy_bits": 5.885960110378856,
+        "expected_remaining": 62.30107991360691,
+        "worst_case_remaining": 183,
+        "is_possible_answer": false,
+        "frequency_score": 2.0980561555075594
+      },
+      {
+        "rank": 2,
+        "word": "roate",
+        "entropy_bits": 5.88277932429197,
+        "expected_remaining": 60.42462203023758,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0600431965442767
+      },
+      {
+        "rank": 3,
+        "word": "raise",
+        "entropy_bits": 5.877909690821481,
+        "expected_remaining": 61.00086393088553,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.03110151187905
+      },
+      {
+        "rank": 4,
+        "word": "raile",
+        "entropy_bits": 5.8657097099518785,
+        "expected_remaining": 61.33088552915767,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0421166306695464
+      },
+      {
+        "rank": 5,
+        "word": "reast",
+        "entropy_bits": 5.865457142861992,
+        "expected_remaining": 71.76544276457884,
+        "worst_case_remaining": 227,
+        "is_possible_answer": false,
+        "frequency_score": 1.9982721382289417
+      },
+      {
+        "rank": 6,
+        "word": "slate",
+        "entropy_bits": 5.855775376955966,
+        "expected_remaining": 71.57278617710583,
+        "worst_case_remaining": 221,
+        "is_possible_answer": true,
+        "frequency_score": 1.994168466522678
+      },
+      {
+        "rank": 7,
+        "word": "crate",
+        "entropy_bits": 5.834874004263521,
+        "expected_remaining": 72.89978401727862,
+        "worst_case_remaining": 246,
+        "is_possible_answer": true,
+        "frequency_score": 1.9803455723542118
+      },
+      {
+        "rank": 8,
+        "word": "salet",
+        "entropy_bits": 5.834581525865647,
+        "expected_remaining": 71.27213822894169,
+        "worst_case_remaining": 221,
+        "is_possible_answer": false,
+        "frequency_score": 1.9760259179265658
+      },
+      {
+        "rank": 9,
+        "word": "irate",
+        "entropy_bits": 5.831396980440788,
+        "expected_remaining": 63.7792656587473,
+        "worst_case_remaining": 194,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 10,
+        "word": "trace",
+        "entropy_bits": 5.830548713859442,
+        "expected_remaining": 74.02030237580993,
+        "worst_case_remaining": 246,
+        "is_possible_answer": true,
+        "frequency_score": 1.9725701943844494
+      },
+      {
+        "rank": 11,
+        "word": "arise",
+        "entropy_bits": 5.820939700886004,
+        "expected_remaining": 63.72570194384449,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 12,
+        "word": "orate",
+        "entropy_bits": 5.8171611758060475,
+        "expected_remaining": 63.89071274298056,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0436285097192224
+      },
+      {
+        "rank": 13,
+        "word": "stare",
+        "entropy_bits": 5.807280035160929,
+        "expected_remaining": 71.29460043196545,
+        "worst_case_remaining": 227,
+        "is_possible_answer": true,
+        "frequency_score": 2.0518358531317498
+      },
+      {
+        "rank": 14,
+        "word": "carte",
+        "entropy_bits": 5.794557247295694,
+        "expected_remaining": 73.5157667386609,
+        "worst_case_remaining": 246,
+        "is_possible_answer": false,
+        "frequency_score": 1.9572354211663068
+      },
+      {
+        "rank": 15,
+        "word": "raine",
+        "entropy_bits": 5.786709827456228,
+        "expected_remaining": 67.0561555075594,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0041036717062637
+      },
+      {
+        "rank": 16,
+        "word": "caret",
+        "entropy_bits": 5.776713196624419,
+        "expected_remaining": 75.59956803455724,
+        "worst_case_remaining": 246,
+        "is_possible_answer": false,
+        "frequency_score": 1.958963282937365
+      },
+      {
+        "rank": 17,
+        "word": "ariel",
+        "entropy_bits": 5.775166510376184,
+        "expected_remaining": 65.28768898488121,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0177105831533475
+      },
+      {
+        "rank": 18,
+        "word": "taler",
+        "entropy_bits": 5.7706123898049215,
+        "expected_remaining": 67.73693304535637,
+        "worst_case_remaining": 196,
+        "is_possible_answer": false,
+        "frequency_score": 2.014902807775378
+      },
+      {
+        "rank": 19,
+        "word": "carle",
+        "entropy_bits": 5.770479071966419,
+        "expected_remaining": 74.68034557235421,
+        "worst_case_remaining": 249,
+        "is_possible_answer": false,
+        "frequency_score": 1.9539956803455725
+      },
+      {
+        "rank": 20,
+        "word": "slane",
+        "entropy_bits": 5.770181104822017,
+        "expected_remaining": 73.98574514038877,
+        "worst_case_remaining": 225,
+        "is_possible_answer": false,
+        "frequency_score": 1.952915766738661
+      }
+    ],
+    "expected_remaining": [
+      {
+        "rank": 1,
+        "word": "roate",
+        "entropy_bits": 5.88277932429197,
+        "expected_remaining": 60.42462203023758,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0600431965442767
+      },
+      {
+        "rank": 2,
+        "word": "raise",
+        "entropy_bits": 5.877909690821481,
+        "expected_remaining": 61.00086393088553,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.03110151187905
+      },
+      {
+        "rank": 3,
+        "word": "raile",
+        "entropy_bits": 5.8657097099518785,
+        "expected_remaining": 61.33088552915767,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0421166306695464
+      },
+      {
+        "rank": 4,
+        "word": "soare",
+        "entropy_bits": 5.885960110378856,
+        "expected_remaining": 62.30107991360691,
+        "worst_case_remaining": 183,
+        "is_possible_answer": false,
+        "frequency_score": 2.0980561555075594
+      },
+      {
+        "rank": 5,
+        "word": "arise",
+        "entropy_bits": 5.820939700886004,
+        "expected_remaining": 63.72570194384449,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 6,
+        "word": "irate",
+        "entropy_bits": 5.831396980440788,
+        "expected_remaining": 63.7792656587473,
+        "worst_case_remaining": 194,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 7,
+        "word": "orate",
+        "entropy_bits": 5.8171611758060475,
+        "expected_remaining": 63.89071274298056,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0436285097192224
+      },
+      {
+        "rank": 8,
+        "word": "ariel",
+        "entropy_bits": 5.775166510376184,
+        "expected_remaining": 65.28768898488121,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0177105831533475
+      },
+      {
+        "rank": 9,
+        "word": "arose",
+        "entropy_bits": 5.767796702404354,
+        "expected_remaining": 66.02116630669546,
+        "worst_case_remaining": 183,
+        "is_possible_answer": true,
+        "frequency_score": 2.037365010799136
+      },
+      {
+        "rank": 10,
+        "word": "raine",
+        "entropy_bits": 5.786709827456228,
+        "expected_remaining": 67.0561555075594,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0041036717062637
+      },
+      {
+        "rank": 11,
+        "word": "artel",
+        "entropy_bits": 5.768294956015332,
+        "expected_remaining": 67.49589632829374,
+        "worst_case_remaining": 196,
+        "is_possible_answer": false,
+        "frequency_score": 1.9928725701943844
+      },
+      {
+        "rank": 12,
+        "word": "taler",
+        "entropy_bits": 5.7706123898049215,
+        "expected_remaining": 67.73693304535637,
+        "worst_case_remaining": 196,
+        "is_possible_answer": false,
+        "frequency_score": 2.014902807775378
+      },
+      {
+        "rank": 13,
+        "word": "ratel",
+        "entropy_bits": 5.730870234975014,
+        "expected_remaining": 69.84319654427645,
+        "worst_case_remaining": 196,
+        "is_possible_answer": false,
+        "frequency_score": 1.9930885529157667
+      },
+      {
+        "rank": 14,
+        "word": "aesir",
+        "entropy_bits": 5.62197544843263,
+        "expected_remaining": 69.8829373650108,
+        "worst_case_remaining": 168,
+        "is_possible_answer": false,
+        "frequency_score": 1.9367170626349892
+      },
+      {
+        "rank": 15,
+        "word": "arles",
+        "entropy_bits": 5.63308947862901,
+        "expected_remaining": 69.89071274298057,
+        "worst_case_remaining": 205,
+        "is_possible_answer": false,
+        "frequency_score": 1.9460043196544277
+      },
+      {
+        "rank": 16,
+        "word": "realo",
+        "entropy_bits": 5.6281995421760875,
+        "expected_remaining": 69.94773218142548,
+        "worst_case_remaining": 176,
+        "is_possible_answer": false,
+        "frequency_score": 1.9697624190064795
+      },
+      {
+        "rank": 17,
+        "word": "alter",
+        "entropy_bits": 5.713170728077568,
+        "expected_remaining": 69.99179265658748,
+        "worst_case_remaining": 196,
+        "is_possible_answer": true,
+        "frequency_score": 1.9907127429805613
+      },
+      {
+        "rank": 18,
+        "word": "saner",
+        "entropy_bits": 5.733713267350085,
+        "expected_remaining": 70.12570194384449,
+        "worst_case_remaining": 219,
+        "is_possible_answer": true,
+        "frequency_score": 2.0041036717062637
+      },
+      {
+        "rank": 19,
+        "word": "later",
+        "entropy_bits": 5.7060889572947895,
+        "expected_remaining": 70.22332613390928,
+        "worst_case_remaining": 196,
+        "is_possible_answer": true,
+        "frequency_score": 2.001511879049676
+      },
+      {
+        "rank": 20,
+        "word": "snare",
+        "entropy_bits": 5.770088860457003,
+        "expected_remaining": 71.09762419006479,
+        "worst_case_remaining": 219,
+        "is_possible_answer": true,
+        "frequency_score": 2.0034557235421167
+      }
+    ],
+    "worst_case": [
+      {
+        "rank": 1,
+        "word": "aesir",
+        "entropy_bits": 5.62197544843263,
+        "expected_remaining": 69.8829373650108,
+        "worst_case_remaining": 168,
+        "is_possible_answer": false,
+        "frequency_score": 1.9367170626349892
+      },
+      {
+        "rank": 2,
+        "word": "arise",
+        "entropy_bits": 5.820939700886004,
+        "expected_remaining": 63.72570194384449,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 3,
+        "word": "raise",
+        "entropy_bits": 5.877909690821481,
+        "expected_remaining": 61.00086393088553,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.03110151187905
+      },
+      {
+        "rank": 4,
+        "word": "reais",
+        "entropy_bits": 5.58589709232471,
+        "expected_remaining": 71.61079913606912,
+        "worst_case_remaining": 168,
+        "is_possible_answer": false,
+        "frequency_score": 1.9399568034557235
+      },
+      {
+        "rank": 5,
+        "word": "serai",
+        "entropy_bits": 5.590318778134175,
+        "expected_remaining": 72.92138228941684,
+        "worst_case_remaining": 168,
+        "is_possible_answer": false,
+        "frequency_score": 1.9609071274298056
+      },
+      {
+        "rank": 6,
+        "word": "aiery",
+        "entropy_bits": 5.343374719730269,
+        "expected_remaining": 87.03542116630669,
+        "worst_case_remaining": 171,
+        "is_possible_answer": false,
+        "frequency_score": 1.8937365010799136
+      },
+      {
+        "rank": 7,
+        "word": "ayrie",
+        "entropy_bits": 5.39671972181302,
+        "expected_remaining": 78.98790496760259,
+        "worst_case_remaining": 171,
+        "is_possible_answer": false,
+        "frequency_score": 1.8663066954643628
+      },
+      {
+        "rank": 8,
+        "word": "ariel",
+        "entropy_bits": 5.775166510376184,
+        "expected_remaining": 65.28768898488121,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0177105831533475
+      },
+      {
+        "rank": 9,
+        "word": "raile",
+        "entropy_bits": 5.8657097099518785,
+        "expected_remaining": 61.33088552915767,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0421166306695464
+      },
+      {
+        "rank": 10,
+        "word": "aloes",
+        "entropy_bits": 5.52579839699168,
+        "expected_remaining": 77.355939524838,
+        "worst_case_remaining": 174,
+        "is_possible_answer": false,
+        "frequency_score": 1.8894168466522676
+      },
+      {
+        "rank": 11,
+        "word": "realo",
+        "entropy_bits": 5.6281995421760875,
+        "expected_remaining": 69.94773218142548,
+        "worst_case_remaining": 176,
+        "is_possible_answer": false,
+        "frequency_score": 1.9697624190064795
+      },
+      {
+        "rank": 12,
+        "word": "stoae",
+        "entropy_bits": 5.601325641232286,
+        "expected_remaining": 74.8963282937365,
+        "worst_case_remaining": 177,
+        "is_possible_answer": false,
+        "frequency_score": 1.9697624190064795
+      },
+      {
+        "rank": 13,
+        "word": "alone",
+        "entropy_bits": 5.614035882733969,
+        "expected_remaining": 77.16328293736501,
+        "worst_case_remaining": 182,
+        "is_possible_answer": true,
+        "frequency_score": 1.9144708423326133
+      },
+      {
+        "rank": 14,
+        "word": "anole",
+        "entropy_bits": 5.565098875267175,
+        "expected_remaining": 78.68120950323974,
+        "worst_case_remaining": 182,
+        "is_possible_answer": false,
+        "frequency_score": 1.8855291576673865
+      },
+      {
+        "rank": 15,
+        "word": "aeros",
+        "entropy_bits": 5.528938889552466,
+        "expected_remaining": 75.20215982721382,
+        "worst_case_remaining": 183,
+        "is_possible_answer": false,
+        "frequency_score": 1.9222462203023758
+      },
+      {
+        "rank": 16,
+        "word": "arose",
+        "entropy_bits": 5.767796702404354,
+        "expected_remaining": 66.02116630669546,
+        "worst_case_remaining": 183,
+        "is_possible_answer": true,
+        "frequency_score": 2.037365010799136
+      },
+      {
+        "rank": 17,
+        "word": "soare",
+        "entropy_bits": 5.885960110378856,
+        "expected_remaining": 62.30107991360691,
+        "worst_case_remaining": 183,
+        "is_possible_answer": false,
+        "frequency_score": 2.0980561555075594
+      },
+      {
+        "rank": 18,
+        "word": "oiler",
+        "entropy_bits": 5.406297831536973,
+        "expected_remaining": 84.05917926565874,
+        "worst_case_remaining": 186,
+        "is_possible_answer": false,
+        "frequency_score": 1.858963282937365
+      },
+      {
+        "rank": 19,
+        "word": "oriel",
+        "entropy_bits": 5.540227193105022,
+        "expected_remaining": 76.76846652267818,
+        "worst_case_remaining": 186,
+        "is_possible_answer": false,
+        "frequency_score": 1.8941684665226781
+      },
+      {
+        "rank": 20,
+        "word": "reoil",
+        "entropy_bits": 5.511335973781418,
+        "expected_remaining": 77.00950323974082,
+        "worst_case_remaining": 186,
+        "is_possible_answer": false,
+        "frequency_score": 1.8632829373650108
+      }
+    ],
+    "frequency_score": [
+      {
+        "rank": 1,
+        "word": "soare",
+        "entropy_bits": 5.885960110378856,
+        "expected_remaining": 62.30107991360691,
+        "worst_case_remaining": 183,
+        "is_possible_answer": false,
+        "frequency_score": 2.0980561555075594
+      },
+      {
+        "rank": 2,
+        "word": "roate",
+        "entropy_bits": 5.88277932429197,
+        "expected_remaining": 60.42462203023758,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0600431965442767
+      },
+      {
+        "rank": 3,
+        "word": "stare",
+        "entropy_bits": 5.807280035160929,
+        "expected_remaining": 71.29460043196545,
+        "worst_case_remaining": 227,
+        "is_possible_answer": true,
+        "frequency_score": 2.0518358531317498
+      },
+      {
+        "rank": 4,
+        "word": "orate",
+        "entropy_bits": 5.8171611758060475,
+        "expected_remaining": 63.89071274298056,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0436285097192224
+      },
+      {
+        "rank": 5,
+        "word": "raile",
+        "entropy_bits": 5.8657097099518785,
+        "expected_remaining": 61.33088552915767,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0421166306695464
+      },
+      {
+        "rank": 6,
+        "word": "arose",
+        "entropy_bits": 5.767796702404354,
+        "expected_remaining": 66.02116630669546,
+        "worst_case_remaining": 183,
+        "is_possible_answer": true,
+        "frequency_score": 2.037365010799136
+      },
+      {
+        "rank": 7,
+        "word": "raise",
+        "entropy_bits": 5.877909690821481,
+        "expected_remaining": 61.00086393088553,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.03110151187905
+      },
+      {
+        "rank": 8,
+        "word": "arise",
+        "entropy_bits": 5.820939700886004,
+        "expected_remaining": 63.72570194384449,
+        "worst_case_remaining": 168,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 9,
+        "word": "irate",
+        "entropy_bits": 5.831396980440788,
+        "expected_remaining": 63.7792656587473,
+        "worst_case_remaining": 194,
+        "is_possible_answer": true,
+        "frequency_score": 2.0308855291576675
+      },
+      {
+        "rank": 10,
+        "word": "strae",
+        "entropy_bits": 5.767280625543757,
+        "expected_remaining": 71.84578833693304,
+        "worst_case_remaining": 227,
+        "is_possible_answer": false,
+        "frequency_score": 2.023110151187905
+      },
+      {
+        "rank": 11,
+        "word": "ariel",
+        "entropy_bits": 5.775166510376184,
+        "expected_remaining": 65.28768898488121,
+        "worst_case_remaining": 173,
+        "is_possible_answer": false,
+        "frequency_score": 2.0177105831533475
+      },
+      {
+        "rank": 12,
+        "word": "taler",
+        "entropy_bits": 5.7706123898049215,
+        "expected_remaining": 67.73693304535637,
+        "worst_case_remaining": 196,
+        "is_possible_answer": false,
+        "frequency_score": 2.014902807775378
+      },
+      {
+        "rank": 13,
+        "word": "raine",
+        "entropy_bits": 5.786709827456228,
+        "expected_remaining": 67.0561555075594,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.0041036717062637
+      },
+      {
+        "rank": 14,
+        "word": "saner",
+        "entropy_bits": 5.733713267350085,
+        "expected_remaining": 70.12570194384449,
+        "worst_case_remaining": 219,
+        "is_possible_answer": true,
+        "frequency_score": 2.0041036717062637
+      },
+      {
+        "rank": 15,
+        "word": "snare",
+        "entropy_bits": 5.770088860457003,
+        "expected_remaining": 71.09762419006479,
+        "worst_case_remaining": 219,
+        "is_possible_answer": true,
+        "frequency_score": 2.0034557235421167
+      },
+      {
+        "rank": 16,
+        "word": "oater",
+        "entropy_bits": 5.628423286531478,
+        "expected_remaining": 71.24535637149027,
+        "worst_case_remaining": 195,
+        "is_possible_answer": false,
+        "frequency_score": 2.002159827213823
+      },
+      {
+        "rank": 17,
+        "word": "later",
+        "entropy_bits": 5.7060889572947895,
+        "expected_remaining": 70.22332613390928,
+        "worst_case_remaining": 196,
+        "is_possible_answer": true,
+        "frequency_score": 2.001511879049676
+      },
+      {
+        "rank": 18,
+        "word": "reast",
+        "entropy_bits": 5.865457142861992,
+        "expected_remaining": 71.76544276457884,
+        "worst_case_remaining": 227,
+        "is_possible_answer": false,
+        "frequency_score": 1.9982721382289417
+      },
+      {
+        "rank": 19,
+        "word": "taser",
+        "entropy_bits": 5.752976305902509,
+        "expected_remaining": 71.27645788336933,
+        "worst_case_remaining": 227,
+        "is_possible_answer": false,
+        "frequency_score": 1.9950323974082074
+      },
+      {
+        "rank": 20,
+        "word": "slate",
+        "entropy_bits": 5.855775376955966,
+        "expected_remaining": 71.57278617710583,
+        "worst_case_remaining": 221,
+        "is_possible_answer": true,
+        "frequency_score": 1.994168466522678
+      }
+    ]
+  },
+  "vocabulary": {
+    "n_answers": 2315,
+    "n_guesses": 12972
+  }
+}

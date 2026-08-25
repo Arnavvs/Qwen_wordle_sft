@@ -1,0 +1,13 @@
+{
+  "name": "dedup_tree_soare",
+  "description": "Distinct states only. Removes the natural visitation skew (turn 1 alone repeats 2315x).",
+  "seed": 20260817,
+  "dedup": true,
+  "shuffle": true,
+  "components": [
+    {
+      "source": "data/tree_soare/train.jsonl",
+      "repeat": 1
+    }
+  ]
+}

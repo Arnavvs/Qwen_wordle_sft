@@ -1,0 +1,116 @@
+{
+  "v1": {
+    "bucket": {
+      "100+": 3000,
+      "11-100": 6924,
+      "2-10": 4999
+    },
+    "bucket_frac": {
+      "100+": 0.201,
+      "11-100": 0.464,
+      "2-10": 0.335
+    },
+    "chosen_is_holdout_answer": 694,
+    "distinct_states": 9893,
+    "duplicate_ids": 1867,
+    "hard_pair_frac": 0.3596,
+    "kind": {
+      "clear": 9556,
+      "competitive": 5367
+    },
+    "rejected_contradicts_feedback": 8415,
+    "rejected_contradicts_feedback_frac": 0.5639,
+    "rejected_is_holdout_answer": 193,
+    "rows": 14923,
+    "rows_per_state_max": 177,
+    "rows_per_state_mean": 1.508,
+    "rows_touching_holdout_candidate": 7385,
+    "turn": {
+      "2": 3486,
+      "3": 5233,
+      "4": 3706,
+      "5": 1809,
+      "6": 689
+    },
+    "unrestricted_chosen_inadmissible_frac": 0.5476,
+    "unrestricted_consistency_asymmetry": 0.4449,
+    "unrestricted_rejected_inadmissible_frac": 0.9925,
+    "unrestricted_rows": 8479
+  },
+  "v3_train": {
+    "bucket": {
+      "100+": 400,
+      "11-100": 1100,
+      "2-10": 4500
+    },
+    "bucket_frac": {
+      "100+": 0.0667,
+      "11-100": 0.1833,
+      "2-10": 0.75
+    },
+    "chosen_is_holdout_answer": 0,
+    "distinct_states": 6000,
+    "duplicate_ids": 0,
+    "hard_pair_frac": 0.7472,
+    "kind": {
+      "competitive": 4483,
+      "contrastive": 1517
+    },
+    "rejected_contradicts_feedback": 924,
+    "rejected_contradicts_feedback_frac": 0.154,
+    "rejected_is_holdout_answer": 0,
+    "rows": 6000,
+    "rows_per_state_max": 1,
+    "rows_per_state_mean": 1.0,
+    "rows_touching_holdout_candidate": 1525,
+    "turn": {
+      "2": 110,
+      "3": 2585,
+      "4": 2536,
+      "5": 664,
+      "6": 105
+    },
+    "unrestricted_chosen_inadmissible_frac": 0.8742,
+    "unrestricted_consistency_asymmetry": 0.0,
+    "unrestricted_rejected_inadmissible_frac": 0.8742,
+    "unrestricted_rows": 1057
+  },
+  "v3_validation": {
+    "bucket": {
+      "100+": 50,
+      "11-100": 150,
+      "2-10": 600
+    },
+    "bucket_frac": {
+      "100+": 0.0625,
+      "11-100": 0.1875,
+      "2-10": 0.75
+    },
+    "chosen_is_holdout_answer": 387,
+    "distinct_states": 800,
+    "duplicate_ids": 0,
+    "hard_pair_frac": 0.7475,
+    "kind": {
+      "competitive": 598,
+      "contrastive": 202
+    },
+    "rejected_contradicts_feedback": 122,
+    "rejected_contradicts_feedback_frac": 0.1525,
+    "rejected_is_holdout_answer": 42,
+    "rows": 800,
+    "rows_per_state_max": 1,
+    "rows_per_state_mean": 1.0,
+    "rows_touching_holdout_candidate": 800,
+    "turn": {
+      "2": 4,
+      "3": 342,
+      "4": 347,
+      "5": 91,
+      "6": 16
+    },
+    "unrestricted_chosen_inadmissible_frac": 0.8286,
+    "unrestricted_consistency_asymmetry": 0.0429,
+    "unrestricted_rejected_inadmissible_frac": 0.8714,
+    "unrestricted_rows": 140
+  }
+}

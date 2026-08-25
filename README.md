@@ -1,5 +1,7 @@
 # Wordle: distilling a classical solver into a 0.5B LLM
 
+### ▶ [**Play the benchmark**](https://claude.ai/code/artifact/256bfce4-e519-4f56-bd4a-047bc7c3a9a7) — 20 real games from the held-out set, scored against every solver here
+
 Eleven experiments on one question: **how much of a symbolic solver's skill can
 you put inside a small language model, and what stops you?**
 
@@ -19,14 +21,22 @@ were re-executed on different machines and produced **byte-identical** weights.
 
 ---
 
-## Play it
+## Try it before reading
 
-**[Play the benchmark →](https://claude.ai/code/artifact/256bfce4-e519-4f56-bd4a-047bc7c3a9a7)**
+**[▶ Play the benchmark](https://claude.ai/code/artifact/256bfce4-e519-4f56-bd4a-047bc7c3a9a7)**
 
-Twenty real games from the held-out set. Play them yourself and see where you
-land against every solver here, or skip the playing and replay any solver's
-game guess by guess. Built by `phase12_demo/`; the model rows are the exact
-per-game records the paired tests used.
+Twenty real games from the 246-answer held-out set. Play them yourself and see
+where you land, or skip the playing entirely and **replay any solver's game
+guess by guess** — click any cell in the results matrix.
+
+The model rows are the exact per-game records the published paired tests were
+computed from, so the page cannot disagree with the numbers below. Its
+JavaScript feedback rule is verified against the Python engine on 408 vectors
+including adversarial duplicate-letter cases (408/408 exact). Source and
+generator in [`phase12_demo/`](phase12_demo/).
+
+Twenty games is deliberately too few to separate these solvers — the standard
+error on a 20-game mean is ~0.2 guesses. The page says so itself.
 
 ## The result
 

@@ -64,7 +64,12 @@ h1{font-family:var(--display);font-size:clamp(30px,4.4vw,46px);font-weight:600;l
 
 .panel{
   background:var(--surface);border:1px solid var(--rule);border-radius:10px;
-  padding:18px;box-shadow:var(--shadow)
+  padding:18px;box-shadow:var(--shadow);
+  min-width:0            /* grid items default to min-width:auto and refuse to shrink */
+}
+@media (max-width:420px){
+  .panel{padding:13px}
+  .wrap{padding:22px 12px 56px}
 }
 .panel-h{
   display:flex;justify-content:space-between;align-items:baseline;gap:12px;
@@ -74,11 +79,16 @@ h1{font-family:var(--display);font-size:clamp(30px,4.4vw,46px);font-weight:600;l
 .panel-h .meta{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
 
 /* ---------- board ---------- */
-.board{display:grid;gap:6px;justify-content:center;margin:2px 0 14px}
-.row{display:grid;grid-template-columns:repeat(5,52px);gap:6px}
+/* Fluid, not fixed. The panel can be ~300px on a phone; 52px tiles and
+   30px keys overflowed it. Everything below sizes from the container. */
+.board{display:grid;gap:6px;margin:2px 0 14px;width:100%}
+.row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+  width:100%;max-width:296px;margin:0 auto
+}
 .tile{
-  width:52px;height:52px;display:grid;place-items:center;
-  font-family:var(--mono);font-weight:600;font-size:24px;
+  aspect-ratio:1;min-width:0;display:grid;place-items:center;
+  font-family:var(--mono);font-weight:600;font-size:clamp(17px,7vw,24px);
   border:2px solid var(--rule-2);border-radius:4px;background:transparent;
   color:var(--ink);text-transform:uppercase;
   transition:transform .12s ease,background .2s ease,border-color .2s ease
@@ -95,15 +105,18 @@ h1{font-family:var(--display);font-size:clamp(30px,4.4vw,46px);font-weight:600;l
 }
 
 /* ---------- keyboard ---------- */
-.kb{display:grid;gap:6px;margin-top:4px}
-.kb-row{display:flex;gap:5px;justify-content:center}
+.kb{display:grid;gap:6px;margin-top:4px;width:100%}
+.kb-row{display:flex;gap:4px;justify-content:center;width:100%}
+/* flex:1 1 0 with min-width:0 lets the ten keys of the top row share whatever
+   width there is instead of forcing a 345px minimum and spilling out */
 .key{
-  font-family:var(--body);font-weight:600;font-size:12px;
-  min-width:30px;height:44px;padding:0 8px;border-radius:5px;
+  flex:1 1 0;min-width:0;max-width:44px;
+  font-family:var(--body);font-weight:600;font-size:clamp(10px,2.6vw,12px);
+  height:44px;padding:0;border-radius:5px;
   border:1px solid var(--rule-2);background:var(--sunk);color:var(--ink);
   cursor:pointer;text-transform:uppercase
 }
-.key.wide{min-width:52px;font-size:11px;letter-spacing:.04em}
+.key.wide{flex:1.7 1 0;max-width:64px;font-size:clamp(9px,2.2vw,11px);letter-spacing:.03em}
 .key:hover{border-color:var(--ink-3)}
 .key:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .key.G{background:var(--tile-g);border-color:var(--tile-g);color:var(--tile-fg)}

@@ -1,220 +1,193 @@
-# A Classical (Non-LLM) Wordle Solver
+# Wordle: distilling a classical solver into a 0.5B LLM
 
-A symbolic + information-theoretic Wordle solver, built as a strong algorithmic baseline for a
-later 0.5B LLM + SFT/GRPO experiment. **No machine learning, no reinforcement learning, no
-language model, anywhere.** Dependencies: Python ≥ 3.9 and NumPy.
+Eleven experiments on one question: **how much of a symbolic solver's skill can
+you put inside a small language model, and what stops you?**
 
-The research question this exists to answer:
+A classical solver plays Wordle in **3.4431** guesses. `Qwen2.5-0.5B-Instruct`,
+untrained, cannot play it at all — 91–97% failure under every prompt tried.
+Distilled from that solver and decoded under a feedback-consistency constraint,
+it reaches **3.7642 guesses, 242/246 solved, 1.6% failure** on a held-out set.
 
-> How much of Wordle performance is achievable with explicit constraint solving and information
-> theory, with no learned model at all?
+That beats classical `random` (4.0203) and `frequency` (3.7927), and sits
+**0.32 guesses** short of the best classical solver. Four separate attempts to
+close that last 0.32 all failed, and the interesting part of this project is
+*why* — the gap turned out not to be the thing anyone assumed.
 
-## The three layers, measured separately
+**Everything here is reproducible.** Every number comes from a script or a
+notebook in this repository, seeds fixed, and the two headline training runs
+were re-executed on different machines and produced **byte-identical** weights.
 
-| Layer | Mechanism | Knowledge used | Solvers |
-|---|---|---|---|
-| 1 · Symbolic constraint solving | Exact elimination of logically impossible answers | Rules of Wordle only | shared by all; `random` isolates it |
-| 2 · Information-theoretic decision making | Choose the probe that best splits the hypothesis space | None — partition structure only | `entropy`, `expected`, `minimax` |
-| 3 · Probability / frequency heuristics | Prefer letters typical of answers | Letter statistics of the answer list | `frequency`, hybrid's prior term |
+---
 
-Reading the benchmark across these groups is the point: `random` shows what perfect elimination
-alone buys, the Layer-2 solvers show what information theory adds, `frequency` shows whether
-cheap letter statistics can substitute for it.
+## The result
+
+| | mean guesses | solved / 246 | failure |
+|---|---:|---:|---:|
+| classical `entropy` | **3.4431** | 246 | 0% |
+| classical `frequency` | 3.7927 | 242 | 1.6% |
+| **0.5B LLM + adaptive decoder** | **3.7642** | **242** | **1.6%** |
+| classical `random` | 4.0203 | 244 | 0.8% |
+| 0.5B LLM, no decoder | 5.9634 | 83 | 66.3% |
+| stock Qwen2.5-0.5B | 6.71–6.88 | — | 91–97% |
+
+---
+
+## Three findings worth the reader's time
+
+### 1. The decoder was worth more than all the training
+
+Restricting each guess to words *consistent with the feedback already received*
+moved the model from 5.4837 to 3.9472 — **−1.54 guesses**, more than everything
+learned in Phases 4–6 combined. Filtering only once the candidate set is small
+(the "adaptive" decoder) bought another 0.16, because the expert's own turn-2
+policy is feedback-*inconsistent* 59% of the time: it probes with a word that
+cannot win, and an always-on filter forbids that.
+
+The model is not a passenger. Playing the same games by picking *at random*
+among admissible words scores 4.52, so the model contributes **−0.57** there
+and **−1.22** under the adaptive decoder.
+
+### 2. The last 0.32 is not an action-selection problem
+
+Two post-training methods, opposite failure modes, same answer:
+
+| | what happened | effect |
+|---|---|---:|
+| Phase 8 — DPO | drifted away from the SFT policy | **−0.1708** |
+| Phase 11 — GRPO | held its ground, changed nothing | **+0.0041** (n.s.) |
+
+Phase 11's *decision budget* explains both **in advance**. Pricing all 922 of
+the model's real decisions against the best action available at each state:
+perfect action selection across the entire regime the decoder restricts is
+worth only **0.0698 guesses** — because the model is already optimal in 85.6%
+of those decisions, and 83% of the remainder are exact ties it could not have
+got wrong.
+
+DPO had less upside than its own drift. GRPO had upside it could not find
+because there was almost none left. Neither was a botched run; the ceiling was
+measured first and both results landed where it predicted.
+
+### 3. Prompt-format results were mostly lock-in, not quality
+
+Stripping the solver-derived constraint block from the prompt costs **+0.52
+guesses** — which looks like proof the harness is doing the model's reasoning.
+It isn't. Training a second adapter on the *same 19,212 rows* with only the
+prompt re-rendered gives a clean 2×2:
+
+| | eval `baseline` | eval `raw_history` |
+|---|---|---|
+| trained `baseline` | **3.7642** | 4.2805 |
+| trained `raw_history` | 4.1098 | **3.8089** |
+
+Each adapter is best on its own format (both off-format penalties significant,
+t = 7.07 and 4.92), and the diagonal is a statistical tie (t = 1.08). So the
+penalty was **format lock-in**.
+
+But the decoder-off probe cuts the other way and is the more interesting half:
+the `raw_history` model emits **0% admissible words unaided** on its own format
+while still playing 3.8089. It reaches equivalent scores having learned
+essentially no feedback consistency — leaning entirely on the decoder. The
+constraint block is replaceable *for score* and load-bearing *for what the
+model knows*.
+
+---
+
+## So what is the gap?
+
+The capability limit measured back in Phases 4–6, which nothing since has
+moved: **given a state with exactly one possible answer, free spelling, and
+nothing left to decide, the best model names it 20% of the time** — 33% even
+when it was trained on that exact word.
+
+Better action selection cannot fix an inability to produce the right word. The
+cause is structural: a 3.46-guess expert almost never visits the endgame, so
+distilling it supplies thin, early-skewed coverage. The next lever is a better
+model or better endgame coverage, not a better objective.
+
+---
+
+## The eleven phases
+
+| | question | outcome |
+|---|---|---|
+| 1 | How far does classical Wordle solving get? | `entropy` 3.4644, 0% fail |
+| 2 | Can an expert produce clean demonstrations? | 3 policies × 2,315 games |
+| 3 | Can they become leak-free SFT data? | 7,067–7,173 rows/policy |
+| 4 | Does SFT on them work? | No — 76–79% failure |
+| 5 | Is the failure vocabulary or reasoning? | Neither, mostly |
+| 6 | Does endgame-heavy data fix it? | Generalises (p=0.031), games unchanged |
+| 7 | Does a feedback-consistent decoder fix it? | **Yes — 3.78, beats `random`** |
+| 7b | What is the right filter threshold? | plateau at 10–50; **3.7642** |
+| 8 | Where is the gap, and does DPO close it? | 74.7% in 2–10 words; DPO **regressed** |
+| 9 | Is the harness doing the model's work? | spread 1.24 guesses, all downside |
+| 10 | Is that lock-in or the format? | **lock-in**; own-format parity |
+| 11 | Is the rest of the gap action selection? | **No.** GRPO +0.004, n.s. |
+
+Full narrative with every result, including the corrections:
+**[PROJECT_README.md](PROJECT_README.md)**.
+
+---
+
+## Methodology notes
+
+The parts that took the most care, and that a reader may want to check:
+
+- **One measurement path.** Every phase scores through the same Phase 9
+  harness, with a control cell that must reproduce 3.7642 before any other
+  number is read. Forking the measurement path is what voided an earlier run.
+- **Paired tests only.** The unpaired SE on 246 games is ~0.064, which cannot
+  resolve the effect sizes post-training produces. Every comparison is paired
+  on identical answers.
+- **Ceilings before methods.** `phase11_grpo/decision_budget.py` prices what a
+  perfect policy would buy *before* a method is chosen. It cancelled one
+  planned training run whose downside exceeded the entire available upside.
+- **Pre-registered readings.** Phases 10 and 11 wrote their outcome
+  interpretations *before* the run — see the `RUN.md` in each folder, where
+  sections written beforehand are left untouched.
+- **Leakage control.** Answer-keyed splits, no answer / candidate list /
+  candidate count in any prompt, and audit scripts that re-derive every state
+  from its own rendered prompt rather than trusting metadata.
+
+---
 
 ## Layout
 
 ```
-wordle_solver.py              standalone solver module — the deliverable
-benchmark.py                  evaluation harness
-build_artifacts.py            one-shot precomputation (~50 s)
-run_full_benchmark.py         full 2,315-answer evaluation
-make_notebook.py              generates the notebook from the modules
-validate_notebook.py          executes every notebook cell on a subset
-wordle_classical_solver.ipynb Kaggle-compatible notebook (68 cells)
-tests/test_wordle_solver.py   61 tests
-data/                         source word lists — never modified
-artifacts/                    generated bundle
-environment.yml               conda environment
+core/                    solver, feedback engine, lookahead, decoder
+phase1_classical/        the classical solver + its own README
+phase2_trajectories/     expert rollouts -> step records
+phase3_sft_package/      step records -> leak-free SFT data
+phase4_5_sft_diagnostic/ train adapters, then the constrained diagnostic
+phase6_endgame/          endgame-heavy SFT
+phase7_constrained/      feedback-consistent decoding + threshold sweep
+phase8_dpo/              DPO (negative result)
+phase8_dpo_v3/           audited DPO rebuild + the audit that cancelled it
+phase9_harness/          the prompt-format harness = the measurement path
+phase10_crossover/       the format crossover
+phase11_grpo/            decision budget, GRPO tasks, GRPO run
+docs/                    MATH.md (every formula, worked), run guides
+tools/                   Kaggle packaging + API run driver
+results/                 the experimental record, as JSON
+tests/                   63 tests
 ```
 
-## Data
+Large regenerable artifacts (model weights, trajectory dumps, Kaggle staging)
+are excluded from git — see `.gitignore`, which says what each one is and how
+to rebuild it. The JSON results in `results/` are the experimental record and
+are tracked.
 
-Discovered by audit, not assumed. The workspace was empty, so the canonical lists were fetched
-(provenance and SHA-256 in `data/PROVENANCE.json`):
-
-| File | Words | Content |
-|---|---|---|
-| `data/wordle_answers.txt` | 2,315 | possible answers |
-| `data/wordle_allowed_guesses.txt` | 10,657 | additional legal guesses (disjoint from answers) |
-| **legal guess pool** | **12,972** | union |
-
-All exactly 5 lowercase ASCII letters; no duplicates, accents, punctuation, or blank lines.
-Exact match to the standard original Wordle vocabulary.
-
-## Results — full benchmark, all 2,315 answers
-
-Every solver evaluated against **every** answer, `guess_pool="full"` (all 12,972 legal guesses
-scored each turn), `max_guesses=6`, `seed=20260817`. Not a sample.
-
-| Solver | Opener | Mean | Median | Std | Min | Max | %3 | %4 | Fail | ms/game |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `random` | — | 4.0259 | 4 | 0.967 | 2 | 6 | 25.40 | 39.83 | 1.56% | 0.5 |
-| `frequency` | STARE | 3.7459 | 4 | 0.918 | 1 | 6 | 35.98 | 38.36 | 1.38% | 0.1 |
-| **`entropy`** | **SOARE** | **3.4644** | **3** | 0.586 | 2 | 6 | **52.57** | 42.76 | **0.00%** | 129 |
-| `expected` | ROATE | 3.4812 | 3 | 0.575 | 2 | **5** | 48.81 | 47.13 | 0.00% | 158 |
-| `minimax` | ARISE | 3.5732 | 4 | 0.625 | 1 | 6 | 42.76 | 50.19 | 0.00% | 172 |
-| `hybrid` | RAISE | 3.4812 | 3 | 0.598 | 1 | **5** | 49.63 | 45.05 | 0.00% | 170 |
-
-Failure-penalized means (failure = 7): `random` 4.0721, `frequency` 3.7909; the four
-zero-failure solvers are unchanged.
-
-**Best overall: `entropy` at 3.4644 mean, 0% failures.** `expected` and `hybrid` tie at 3.4812
-with a better *tail* — max 5 guesses rather than 6.
-
-### Contribution by layer
-
-| Mechanism added | Mean | Δ |
-|---|---|---|
-| Symbolic elimination alone (`random`) | 4.0721 | — |
-| + frequency heuristics (Layer 3) | 3.7909 | −0.281 |
-| + information theory (Layer 2, best) | 3.4644 | −0.608 |
-
-Exact constraint filtering alone already solves 98.4% of games within six guesses. Information
-theory buys a further ~0.61 guesses **and eliminates failures entirely**.
-
-### Mean surviving candidates after each guess
-
-Starting uncertainty is 2,315 candidates (11.18 bits).
-
-| Solver | after g1 | g2 | g3 | g4 |
-|---|---|---|---|---|
-| `random` | 214.33 | 19.50 | 3.01 | 1.44 |
-| `frequency` | 71.29 | 5.70 | 1.87 | 1.31 |
-| `entropy` | 62.30 | 3.35 | 1.07 | 1.00 |
-| `expected` | 60.42 | 3.15 | 1.03 | 1.00 |
-| `hybrid` | 61.00 | 3.37 | 1.06 | 1.00 |
-
-### Best openers (all 12,972 scored against all 2,315 answers)
-
-| Metric | Best | Value |
-|---|---|---|
-| Entropy | SOARE | 5.8860 bits |
-| Expected remaining | ROATE | 60.42 candidates |
-| Worst-case bucket | AESIR / ARISE / RAISE | 168 candidates |
-| Best that is also a possible answer | RAISE | 5.8779 bits |
-
-Top openers are mostly **not** possible answers — a turn-1 probe's job is to split the space,
-not to win. This is precisely why the guess pool must not be restricted to the answer list.
-
-These figures reproduce published values for this vocabulary (SOARE at 5.886 bits, ROATE at
-60.42, minimax worst-case 168), which is useful external validation of the feedback function
-and entropy computation.
-
-## Quick start
+## Reproducing
 
 ```bash
 conda env create -f environment.yml
-conda activate wordle
-python build_artifacts.py
-python wordle_solver.py --answer crane
+python phase1_classical/build_artifacts.py      # vocabulary + feedback matrix
+python -m pytest                                 # 63 tests
 ```
 
-```bash
-python wordle_solver.py --interactive
-```
+GPU work runs on Kaggle through `tools/kaggle_run.py` (see
+`.claude/skills/kaggle-run/`), which drives the whole lifecycle through the API.
 
-```bash
-pytest tests/ -q
-python run_full_benchmark.py
-```
+## Credits
 
-## Using it from Python
-
-```python
-from wordle_solver import load_artifacts, play_game, solve
-
-bundle = load_artifacts("artifacts")      # instant — matrix is memory-mapped
-solve(answer="crane", verbose=True)
-
-r = play_game(bundle.solver("entropy"), "mummy")
-print(r.n_guesses, r.guesses, r.candidates_remaining)
-```
-
-## Feedback encoding
-
-`G`=green, `Y`=yellow, `B`=grey, encoded base-3 little-endian by position:
-
-```
-code = sum(tile[i] * 3**i)      tile in {0=B, 1=Y, 2=G}      code in [0, 243)
-```
-
-243 < 256, so the whole 12,972 × 2,315 feedback table fits in `uint8` — **28.6 MiB**, which is
-what makes exhaustive precomputation cheap. `GGGGG` is code 242.
-
-### Duplicate letters
-
-The answer supplies a **budget** per letter. Greens consume it first; then yellows are assigned
-left to right from whatever remains; surplus letters come back grey. So `added` vs `dread` is
-`YYBYG` — the green at index 4 consumes budget before the yellow at index 1 — and `speed` vs
-`abide` is `BBYBY`, with the second `e` greyed out. 32.4% of answers contain a repeated letter,
-so this is not an edge case.
-
-## Configuration
-
-Everything behavioural lives in `SolverConfig` / `artifacts/solver_config.json`:
-
-```python
-SolverConfig(
-    seed=20260817, max_guesses=6, strategy="hybrid",
-    guess_pool="full",          # "full" | "adaptive" | "candidates"
-    entropy_weight=1.0,         # all four weights are on a BITS scale
-    minimax_weight=0.25,
-    expected_weight=0.25,
-    answer_bonus_weight=1.0,
-    opening_guess=None,         # set to skip recomputing turn 1
-)
-```
-
-`guess_pool="full"` scores all 12,972 legal guesses every turn — strongest and slowest.
-`"adaptive"` is much faster for a very small cost in mean guesses.
-
-## Hybrid scoring
-
-The four component quantities have incompatible units, so they are all converted to **bits**
-before being combined (rather than z-scored, whose scale would drift turn to turn):
-
-```
-score(g) =  α·H(g)                        bits of expected information gained
-          − λ·log2(max_bucket(g))         bits left, worst case
-          − ν·log2(E[remaining](g))       bits left, in expectation
-          + μ·log2(1 + p_answer(g))       credit for possibly winning this turn
-```
-
-Because every term is in bits, `λ = 0.25` genuinely means "weight worst-case at a quarter of
-raw information gain". Defaults were chosen to be interpretable, then checked with a weight
-sweep — not tuned to the benchmark.
-
-## Scope boundary
-
-All solvers are **one-step greedy**: they optimise immediate information, not the true
-minimum-expected-guesses game tree. A full lookahead search does better. This is "strong
-classical", not optimal — stated so the LLM comparison is not read against a false ceiling.
-
-Note also that these solvers receive the answer list as *input*, so they never need to know
-which strings are English words. That is a real advantage over an LLM and should be
-acknowledged rather than treated as a fair fight.
-
-## Artifacts
-
-`build_artifacts.py` writes a bundle that reproduces the solver anywhere with Python + NumPy:
-
-```
-answers.txt  valid_guesses.txt  feedback_matrix.npy
-metadata.json  frequency_model.json  solver_config.json
-```
-
-Plus, after benchmarking: `benchmark_results.json`, `first_guess_analysis.csv`.
-
-Paths are relative throughout. No `/kaggle/...` path appears in `wordle_solver.py`; Kaggle
-detection lives only in the notebook's setup layer. CPU only — a GPU gives no benefit at this
-problem size.
+Base model `Qwen/Qwen2.5-0.5B-Instruct`. Word lists in `data/` with provenance
+in `data/PROVENANCE.json`. Trained and evaluated on Kaggle T4s.

@@ -172,9 +172,29 @@ SFT_ADAPTER = "tree_salet_endgame"
 # arm name -> adapter directory name. 'base' is the stock model and needs no
 # entry. Phase 10's crossover adds a second trained arm here and runs the 2x2
 # with ARMS = ["sft","sft_rawhist"], VARIANTS_TO_RUN = ["baseline","raw_history"].
+# A value may be a single adapter name, or a LIST forming a CHAIN applied in
+# order with a merge between each step.
+#
+# The chain is not cosmetic. `tree_salet_endgame` and `..._rawhist` were both
+# trained directly on stock Qwen, so one adapter reproduces them. But the DPO
+# and GRPO adapters were trained on top of the *merged* SFT model:
+#
+#     merged = PeftModel.from_pretrained(base, SFT).merge_and_unload()
+#     policy = get_peft_model(merged, LoraConfig(...))   # <- only THIS is saved
+#
+# so loading one of those onto stock Qwen silently drops every SFT weight and
+# measures a nearly-untrained model. That is the exact failure that voided
+# Phase 8 v3, and it looks like a catastrophic regression rather than a bug.
 ARM_ADAPTERS = {
     "sft":         SFT_ADAPTER,
     "sft_rawhist": "tree_salet_endgame_rawhist",
+    "sft_grpo":    [SFT_ADAPTER, "tree_salet_endgame_grpo"],
+    # Mid-training checkpoints. RUN.md pre-registers the stop rule as "early-stop
+    # on the paired rollout, not on loss", which requires scoring the checkpoints
+    # rather than assuming the last step is the best one.
+    "sft_grpo_150": [SFT_ADAPTER, "tree_salet_endgame_grpo_step150"],
+    "sft_grpo_300": [SFT_ADAPTER, "tree_salet_endgame_grpo_step300"],
+    "sft_dpo":     [SFT_ADAPTER, "tree_salet_dpo"],
 }
 
 # ---- what to run ----------------------------------------------------------
@@ -188,7 +208,13 @@ RUN_FORMAT  = True       # probe B (cheap: ~2 min for all 12) - now runs FIRST
 # nothing. The lock-in confound it was meant to break is instead settled by
 # the format-crossover run (TECHNICAL.md 10C), which needs a second *trained*
 # adapter, not an untrained model.
-ARMS        = ["sft"]
+# PHASE 10 CROSSOVER (2026-08-24). The second trained adapter now exists, so
+# the arm the comment above says is needed is available: `sft_rawhist` is the
+# same 19,212 rows and the same hyperparameters as `sft`, with only the prompt
+# re-rendered. Running both arms x both formats fills the 2x2 whose other two
+# cells are already measured (3.7642 / 4.2805).
+# Phase 11 scoring: the GRPO adapter against its own SFT reference.
+ARMS        = ["sft", "sft_grpo_150", "sft_grpo_300", "sft_grpo"]
 
 # 246 = the full held-out set. The 2026-08-22 sweep used 100 to fit 12 variants
 # x 2 arms in one session; with the base arm gone and only the variants that
@@ -203,7 +229,10 @@ GAME_SEED   = 20260822   # which games; fixed so runs stay comparable
 #   with_count   - LEAKY, but the cleanest null in the table
 #   few_shot     - re-measured with the rotating non-copyable exemplars
 # Set to None to run all twelve again.
-VARIANTS_TO_RUN = ["baseline", "raw_history", "with_count", "few_shot"]
+# Crossover: only the two formats the 2x2 is defined over. `with_count` is
+# LEAKY and `few_shot` is not part of the square, so both are dropped - four
+# cells at ~2-3 min each rather than eight.
+VARIANTS_TO_RUN = ["baseline"]
 
 # ---- decoder: FIXED. This is the control, not a variable. -----------------
 ADAPTIVE_THRESHOLD = 20
@@ -333,18 +362,23 @@ def find_adapter(name):
 ARM_PATHS = {}
 for _arm in ARMS:
     if _arm == "base": continue
-    _name = ARM_ADAPTERS.get(_arm)
-    if _name is None:
+    _names = ARM_ADAPTERS.get(_arm)
+    if _names is None:
         raise SystemExit(f"arm {_arm!r} has no entry in ARM_ADAPTERS.")
-    _p = find_adapter(_name)
-    if _p is None:
-        raise SystemExit(
-            f"arm {_arm!r} needs adapter {_name!r}, which is not attached. "
-            f"Attach the dataset holding it, or drop the arm. Do NOT substitute "
-            f"a different adapter - that voided Phase 8 v3.")
-    ARM_PATHS[_arm] = _p
-SFT_PATH = ARM_PATHS.get("sft")
-print("arms ->", {k: os.path.basename(v) for k, v in ARM_PATHS.items()} or "base only")
+    if isinstance(_names, str): _names = [_names]
+    _chain = []
+    for _name in _names:
+        _p = find_adapter(_name)
+        if _p is None:
+            raise SystemExit(
+                f"arm {_arm!r} needs adapter {_name!r}, which is not attached. "
+                f"Attach the dataset holding it, or drop the arm. Do NOT "
+                f"substitute a different adapter - that voided Phase 8 v3.")
+        _chain.append(_p)
+    ARM_PATHS[_arm] = _chain
+SFT_PATH = ARM_PATHS["sft"][-1] if "sft" in ARM_PATHS else None
+print("arms ->", {k: " + ".join(os.path.basename(x) for x in v)
+                  for k, v in ARM_PATHS.items()} or "base only")
 ''')
 
 # ===========================================================================
@@ -601,8 +635,14 @@ def get_model(arm):
     print(f"  loading arm {arm!r} ...", flush=True)
     m = base_model()
     if arm != "base":
-        path = ARM_PATHS[arm]
-        m = PeftModel.from_pretrained(m, path, is_trainable=False)
+        chain = ARM_PATHS[arm]
+        for i, path in enumerate(chain):
+            m = PeftModel.from_pretrained(m, path, is_trainable=False)
+            if i < len(chain) - 1:
+                # Merge before stacking the next one, reproducing exactly how
+                # the later adapter was trained.
+                m = m.merge_and_unload()
+        print(f"    chain: {' + '.join(os.path.basename(p) for p in chain)}")
     m = m.to("cuda").eval()
     MODEL_CACHE[arm] = m
     return m

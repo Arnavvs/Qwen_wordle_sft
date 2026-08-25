@@ -117,6 +117,22 @@
       "max_runtime_minutes": 200,
       "gate": "Cell 4 must report round-trip ok=19,212 / mismatch=0, and cell 6 must land on 1202 steps like Phase 6. A different step count means the data is not what it should be - stop rather than interpret.",
       "resumes": false
+    },
+    "phase11": {
+      "notebook": "phase11_grpo/wordle_phase11_grpo_kaggle.ipynb",
+      "generator": "phase11_grpo/make_grpo_notebook.py",
+      "slug": "wordle-phase-11-grpo",
+      "title": "Wordle Phase 11 - GRPO",
+      "accelerator": "t4x2",
+      "dataset_sources": [
+        "arnavyrr/wordle-sft-package-v2",
+        "arnavyrr/wordle-adapters-v2"
+      ],
+      "enable_internet": true,
+      "expected_minutes": 75,
+      "max_runtime_minutes": 180,
+      "gate": "Cell 3 must load the task set and pass its invariants, and cell 4 must load adapter 'tree_salet_endgame' by basename - never a substitute. The real verdict is the paired 246-game rollout run afterwards by the phase9 harness, which must reproduce 3.7642 for the sft+baseline control.",
+      "resumes": false
     }
   }
 }

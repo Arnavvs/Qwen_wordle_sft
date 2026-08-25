@@ -1,0 +1,175 @@
+{
+  "config": {
+    "estimator": "exact",
+    "group_size": 8,
+    "scale_rewards": false,
+    "beta": 0.04,
+    "lr": 1e-06,
+    "epochs": 1,
+    "tasks_per_step": 8,
+    "steps": 393,
+    "n_train": 3150,
+    "n_val": 380,
+    "sft_adapter": "tree_salet_endgame",
+    "seconds": 3176.4
+  },
+  "task_manifest": {
+    "adaptive_threshold": 20,
+    "buckets": {
+      "train": {
+        "100+": 150,
+        "11-100": 500,
+        "2-10": 2500
+      },
+      "validation": {
+        "100+": 20,
+        "11-100": 60,
+        "2-10": 300
+      }
+    },
+    "counts": {
+      "train": 3150,
+      "validation": 380
+    },
+    "format_version": 1,
+    "leakage": {
+      "train_actions_exclude_holdout_answers": true,
+      "train_val_state_disjoint": true
+    },
+    "opener": "salet",
+    "reward": "value = expected further guesses, LOWER IS BETTER; reward = -value; GRPO normalises within the group",
+    "seed": 20260825,
+    "unrestricted_top_k": 48,
+    "value_families": {
+      "restricted": "exact adaptive-decoder tree, full remaining depth (units: mean further guesses)",
+      "units_differ_by_regime": "safe: GRPO normalises within a group, and a group is one state",
+      "unrestricted": "exhaustive one-ply E[remaining] over the legal pool, top-48 kept (units: expected remaining candidates)"
+    }
+  },
+  "log": [
+    {
+      "step": 25,
+      "pg": -0.08637,
+      "kl": 5e-05,
+      "loss": -0.08637,
+      "p_opt": 0.78222,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 50,
+      "pg": -0.04687,
+      "kl": 0.0002,
+      "loss": -0.04686,
+      "p_opt": 0.70939,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 75,
+      "pg": -0.04797,
+      "kl": 0.00066,
+      "loss": -0.04794,
+      "p_opt": 0.75019,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 100,
+      "pg": -0.05762,
+      "kl": 0.00193,
+      "loss": -0.05754,
+      "p_opt": 0.7198,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 125,
+      "pg": -0.05556,
+      "kl": 0.003,
+      "loss": -0.05544,
+      "p_opt": 0.76712,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 150,
+      "pg": -0.05449,
+      "kl": 0.00678,
+      "loss": -0.05422,
+      "p_opt": 0.70431,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 175,
+      "pg": -0.04973,
+      "kl": 0.00589,
+      "loss": -0.04949,
+      "p_opt": 0.76039,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 200,
+      "pg": -0.04867,
+      "kl": 0.01057,
+      "loss": -0.04825,
+      "p_opt": 0.72049,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 225,
+      "pg": -0.05454,
+      "kl": 0.01065,
+      "loss": -0.05412,
+      "p_opt": 0.78164,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 250,
+      "pg": -0.04756,
+      "kl": 0.01739,
+      "loss": -0.04686,
+      "p_opt": 0.7681,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 275,
+      "pg": -0.05353,
+      "kl": 0.01914,
+      "loss": -0.05277,
+      "p_opt": 0.77538,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 300,
+      "pg": -0.06456,
+      "kl": 0.02365,
+      "loss": -0.06362,
+      "p_opt": 0.73598,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 325,
+      "pg": -0.03617,
+      "kl": 0.02539,
+      "loss": -0.03516,
+      "p_opt": 0.74547,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 350,
+      "pg": -0.04799,
+      "kl": 0.03294,
+      "loss": -0.04667,
+      "p_opt": 0.73191,
+      "zero_adv": 0.0
+    },
+    {
+      "step": 375,
+      "pg": -0.04994,
+      "kl": 0.03257,
+      "loss": -0.04863,
+      "p_opt": 0.72973,
+      "zero_adv": 0.0
+    }
+  ],
+  "val_optimal_action_rate": {
+    "before": 0.6763157894736842,
+    "after": 0.6894736842105263
+  }
+}

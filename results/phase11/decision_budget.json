@@ -1,0 +1,31 @@
+{
+  "baseline_mean": 3.7642,
+  "cell": "sft|baseline",
+  "classical_entropy": 3.4431,
+  "decisions_per_game": 3.748,
+  "gap": 0.3211,
+  "histogram": {
+    "0-1_forced": 105,
+    "100+": 433,
+    "11-20": 49,
+    "2-10": 234,
+    "21-100": 101
+  },
+  "n_games": 246,
+  "restricted": {
+    "decisions": 153,
+    "mistakes": 22,
+    "optimal": 131,
+    "optimal_was_tie": 127
+  },
+  "restricted_cost_by_bucket_per_game": {
+    "11-20": 0.0112,
+    "2-10": 0.0586
+  },
+  "restricted_cost_per_game": 0.0698,
+  "total_decisions": 922,
+  "unrestricted_cost_per_decision": null,
+  "unrestricted_cost_per_game": null,
+  "unrestricted_decisions": 530,
+  "unrestricted_sampled": 0
+}

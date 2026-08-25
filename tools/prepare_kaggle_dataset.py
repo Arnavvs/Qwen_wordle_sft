@@ -47,6 +47,14 @@ REQUIRED = [
      "sft_package/data/dpo_v3/validation.jsonl"),
     ("sft_package/data/dpo_v3/manifest.json",
      "sft_package/data/dpo_v3/manifest.json"),
+    # Phase 11: the precomputed GRPO reward table. The manifest records which
+    # value family produced each task and must travel with the rows.
+    ("sft_package/data/grpo_tasks/train.jsonl",
+     "sft_package/data/grpo_tasks/train.jsonl"),
+    ("sft_package/data/grpo_tasks/validation.jsonl",
+     "sft_package/data/grpo_tasks/validation.jsonl"),
+    ("sft_package/data/grpo_tasks/manifest.json",
+     "sft_package/data/grpo_tasks/manifest.json"),
     ("sft_package/data/disagreement/contrast.jsonl",
      "sft_package/data/disagreement/contrast.jsonl"),
     ("sft_package/data/disagreement/entropy.jsonl",
@@ -82,16 +90,13 @@ OPTIONAL = [
     ("phase8_dpo_v3/README.md", "phase8_dpo_v3/README.md"),
     ("phase8_dpo_v3/AUDIT.md", "phase8_dpo_v3/AUDIT.md"),
     ("phase8_dpo_v3/comparison.json", "phase8_dpo_v3/comparison.json"),
+    ("sft_package/data/grpo_tasks/audit.json",
+     "sft_package/data/grpo_tasks/audit.json"),
+    ("phase11_grpo/RUN.md", "phase11_grpo/RUN.md"),
+    ("phase11_grpo/decision_budget.json", "phase11_grpo/decision_budget.json"),
     ("phase8_dpo_v3/legacy_audit.json", "phase8_dpo_v3/legacy_audit.json"),
     ("phase8_dpo_v3/decision_structure.json",
      "phase8_dpo_v3/decision_structure.json"),
-    # Superseded drafts, carried only if they happen to exist locally.
-    ("sft_package/data/dpo_adaptive_competitive_v2/train.jsonl",
-     "sft_package/data/dpo_adaptive_competitive_v2/train.jsonl"),
-    ("sft_package/data/dpo_adaptive_competitive_v2/validation.jsonl",
-     "sft_package/data/dpo_adaptive_competitive_v2/validation.jsonl"),
-    ("sft_package/data/dpo_adaptive_competitive_v2/manifest.json",
-     "sft_package/data/dpo_adaptive_competitive_v2/manifest.json"),
 ]
 
 

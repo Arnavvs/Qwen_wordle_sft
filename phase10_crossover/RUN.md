@@ -1,7 +1,9 @@
 # Phase 10 — the format crossover
 
-**Status: prepared, not run.** Everything below is written before any result
-exists, deliberately.
+**Status: RUN, 2026-08-24. Outcome A (lock-in); outcome C refuted.**
+Sections 1-6 are unchanged from before the run — the predictions in section 3
+are as they were written. Results are in section 7 at the bottom, and in
+PROJECT_README "Phase 10 — the format crossover".
 
 ---
 
@@ -232,3 +234,75 @@ Local dry run, no GPU needed:
 ```bash
 .conda/python.exe phase10_crossover/rerender_rows.py --variant raw_history --dry-run
 ```
+
+---
+
+## 7. Result (added 2026-08-24, after the run)
+
+### Training
+
+`tree_salet_endgame_rawhist`, 19,212 rows, **1,202 steps** (Phase 6: 1,202),
+loss 5.9228 -> 1.0295, 70.6 min on a T4. Gate cell 4:
+`round-trip: ok=19,212  parse-fail=0  mismatch=0`. Both gates passed.
+
+Phase 6 bottomed at 0.7410 against this run's 1.0295. Same rows, same steps,
+same hyperparameters — the higher floor is the information difference (mean
+prompt 150 -> 110 tokens with the constraint block gone), not a training fault.
+
+### The square
+
+246 answers, decoder adaptive@20, all cells open SALET. `sft`+`baseline`
+reproduced **3.7642** exactly — control held.
+
+|  | eval `baseline` | eval `raw_history` |
+|---|---|---|
+| trained `baseline` (`sft`) | **3.7642** · 242/246 | 4.2805 · 232/246 |
+| trained `raw_history` (`sft_rawhist`) | 4.1098 · 227/246 | **3.8089** · 240/246 |
+
+```
+diagonal - each adapter on its own format   +0.0447   t=+1.08   NOT significant
+sft moved off its format                    +0.5163   t=+7.07   SIGNIFICANT
+sft_rawhist moved off its format            +0.3008   t=+4.92   SIGNIFICANT
+```
+
+**A (lock-in) is the outcome**, and it matched its own pre-registered numbers:
+section 3 predicted "`rawhist` on `raw_history` ~ 3.8-3.9, and worse on
+`baseline`". Observed 3.8089 and 4.1098.
+
+**C (intrinsic) is refuted.** It predicted `rawhist` would stay near 4.28 on
+`raw_history` despite training on it. It did not.
+
+### The probe, which complicates the clean reading
+
+Decoder off, 148 states:
+
+| arm | eval format | parse% | legal% | admissible% |
+|---|---|---:|---:|---:|
+| `sft` | baseline | 99.3 | 84.5 | **22.3** |
+| `sft` | raw_history | 100.0 | 95.9 | 1.4 |
+| `sft_rawhist` | baseline | 99.3 | 93.2 | **6.1** |
+| `sft_rawhist` | raw_history | 100.0 | 99.3 | **0.0** |
+
+`sft_rawhist` plays 3.8089 while emitting **0% admissible words unaided on its
+own format**. Gameplay parity on the diagonal is delivered by the decoder, not
+by the model having learned deduction. The constraint block is replaceable *for
+score* and load-bearing *for what the model knows* (22.3% -> 6.1% on matched
+prompts).
+
+This is the part section 3 did not anticipate: A and B were framed as
+alternatives about gameplay, and the answer is A on gameplay while the probe
+says the block still teaches the deduction. Neither branch covered "parity on
+score, collapse in unaided ability".
+
+### Follow-up A prescribes
+
+Mixed-format SFT — one adapter on all non-leaky variants — with the
+pre-registered expectation that hard-mode violations fall. Consistent with
+`sft_rawhist` already holding the lowest HMV in the square (7.46% on baseline
+vs `sft`'s 9.11%).
+
+### Artifacts
+
+- adapter: `arnavyrr/wordle-adapters-v2` version with `tree_salet_endgame_rawhist/`
+- results: `.kaggle_runs/phase9_out/results_phase9/harness_results.json` (per-game scores for all four cells)
+- kernels: `wordle-phase-10-format-crossover` (train), `wordle-phase-9-prompt-harness-sweep` v3 (2x2)

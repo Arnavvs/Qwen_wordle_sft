@@ -101,7 +101,8 @@ later corrected).
 | 8 | Where is the gap, and does DPO close it? | 74.7% in 2–10 words; DPO **regressed** (t=−3.21) |
 | 8b | Does a clean dataset change that? | run void — wrong adapter silently loaded; cause found, see Phase 9 |
 | 9 | Is the harness the model? | spread 1.24 guesses, **all downside**; no prompt beat `baseline` |
-| 10 | Is that lock-in or the format? | **prepared, not yet run** — the crossover |
+| 10 | Is that lock-in or the format? | **lock-in.** Own-format parity (t=1.08); both off-format penalties significant |
+| 11 | Is the rest of the gap action selection? | **no.** GRPO 3.7602 vs 3.7642, t=−0.28; 233/246 games identical |
 
 Phases 1–3 were built before the numbering existed and are labelled
 retrospectively; the work is unchanged.
@@ -1304,6 +1305,217 @@ the verdict block — before any GPU time was spent.
 
 ---
 
+# Phase 10 — the format crossover
+
+Phase 9 measured a **+0.516** penalty for `raw_history` (the prompt minus the
+solver-derived constraint block) and read it as evidence the harness was doing
+deduction the write-up credits to the model. That reading was not earned: the
+adapter had only ever seen `baseline`, so **format lock-in predicts the same
+table**. Phase 9's stock-Qwen arm was meant to break the tie and could not — a
+model that cannot play Wordle under any prompt cannot rank prompts.
+
+Breaking it needed a second *trained* adapter. `tree_salet_endgame_rawhist` is
+the **same 19,212 rows** with only the prompt re-rendered: identical LoRA, lr
+2e-4, 2 epochs, batch 4x4, seed 20260817. It landed on **1,202 steps**, exactly
+Phase 6's, and the re-render was proved lossless first — every row round-trips
+back to its stored prompt byte-for-byte (`ok=19,212  mismatch=0`).
+
+## The square
+
+246 held-out answers, decoder fixed at adaptive@20, every cell opens SALET.
+`sft`+`baseline` reproduced **3.7642** exactly, which is the control that makes
+the rest interpretable.
+
+|  | eval `baseline` | eval `raw_history` |
+|---|---|---|
+| trained `baseline` (`sft`) | **3.7642** · 242/246 | 4.2805 · 232/246 |
+| trained `raw_history` (`sft_rawhist`) | 4.1098 · 227/246 | **3.8089** · 240/246 |
+
+Paired on identical answers:
+
+```
+diagonal - each adapter on its own format   +0.0447   t=+1.08   NOT significant
+sft moved off its format                    +0.5163   t=+7.07   SIGNIFICANT
+sft_rawhist moved off its format            +0.3008   t=+4.92   SIGNIFICANT
+```
+
+**Outcome A (lock-in), as pre-registered.** Each adapter is best on its own
+format; both off-format penalties are significant; `rawhist` on `raw_history`
+lands at 3.8089, inside the 3.8-3.9 band written down before the run.
+
+**Outcome C is refuted.** C predicted `rawhist` would stay near 4.28 on
+`raw_history` despite training on it. It recovered to statistical parity with
+baseline. So **Phase 9's +0.516 was mostly lock-in, not a property of the
+format** — a correction to the Phase 9 reading.
+
+## The probe disagrees with the score, and both are right
+
+Decoder **off**, 148 stratified states:
+
+| arm | eval format | parse% | legal% | admissible% |
+|---|---|---:|---:|---:|
+| `sft` | baseline | 99.3 | 84.5 | **22.3** |
+| `sft` | raw_history | 100.0 | 95.9 | 1.4 |
+| `sft_rawhist` | baseline | 99.3 | 93.2 | **6.1** |
+| `sft_rawhist` | raw_history | 100.0 | 99.3 | **0.0** |
+
+`sft_rawhist`, on the format it was trained on, emits **0.0% admissible words
+unaided** — and still plays 3.8089. It reaches baseline-equivalent gameplay
+having learned essentially no feedback consistency. On matched `baseline`
+prompts it manages 6.1% against `sft`'s 22.3%.
+
+Two true statements that point opposite ways:
+
+- **On final score**, the constraint block is replaceable. Train without it and
+  the decoder covers the difference.
+- **On what the model knows**, the block is what does the teaching. Removing it
+  costs roughly all of the model's unaided deduction.
+
+So the "is the harness the model?" worry is not dissolved — for `sft_rawhist`
+it is **sharpened**. That adapter is close to a pure decoder-driven player, and
+the original `sft` at 22.3% admissible is the one doing more of its own work.
+What this rules out is the stronger claim that the block encodes deduction a
+0.5B model cannot learn at this scale.
+
+**Not claimable from this:** that either format is intrinsically better. The
+diagonal is a tie.
+
+---
+
+# Phase 11 — the decision budget, and what is left for RL
+
+Before choosing a method to close the last **0.3211**, `decision_budget.py`
+prices where that gap can and cannot be recovered. It takes the model's own
+**922 decisions** across the 246 games and prices each against the best action
+at *that exact state*. Phase 8's counterfactual answered the same question by
+substituting the expert and replaying, which is non-additive — its three
+buckets summed to −0.065 against a combined +0.321. This is additive and
+attributable.
+
+## Where the decisions are
+
+```
+|adm| 0-1    forced/solved      11.4%
+|adm| 2-10   restricted         25.4%
+|adm| 11-20  restricted          5.3%
+|adm| 21-100 UNrestricted       11.0%
+|adm| 100+   UNrestricted       47.0%   <- turn-2 probes
+```
+
+**58% of the model's decisions are unrestricted**, and nearly half are turn-2
+probes where it picks freely from 12,972 words.
+
+## What perfect action selection is worth
+
+Exact adaptive-decoder tree, every restricted decision priced:
+
+```
+restricted decisions with a real choice   153   (0.62 per game)
+model already optimal                     131   (85.6%)
+  ...where the optimum was a TIE          127   (83.0%)
+genuine mistakes                           22   (14.4%)
+
+expected guesses lost                  0.0698 per game
+```
+
+**Fixing every restricted-regime mistake — perfectly, with zero drift — buys
+0.0698 guesses.** 3.7642 → 3.6944, or 22% of the gap. Phase 8's DPO drift cost
+**0.1708**: the downside was 2.4x the entire available upside.
+
+That killed the planned DPO retry. The corrected dataset (`phase8_dpo_v3/`,
+6,000 pairs, all hard checks passing) was built, audited and **never trained
+on**, because measuring the ceiling first showed it could not win. The same
+measurement rules out on-policy mistake mining independently: 0.089 mistakes
+per game over 2,069 answers is ~185 pairs, and 83% of the decisions the model
+gets right were ties it could not have got wrong.
+
+## Two structural facts this exposes
+
+**The optimum is usually a set.** 83% of correct restricted decisions were
+ties, and 89.5% of the built GRPO tasks have more than one exactly-optimal
+action. A pairwise preference cannot represent that; group-relative advantage
+can, which is the substantive reason to prefer GRPO here over DPO.
+
+**The unrestricted regime is not exactly priceable.** One lookahead valuation
+of a single turn-2 state costs ~13.5s at 83 candidates and grows sharply; a
+10-decision sample did not finish in 30 minutes. That is why Phase 11 rewards
+that regime with a one-ply proxy and labels every such task `exact: false`.
+
+## The run, and what it settled
+
+GRPO trained on 3,150 exactly-rewarded states, 393 steps. The proxy moved the
+right way — held-out optimal-action rate **67.6% → 68.9%** — and every state
+carried gradient signal (`zero_adv` 0.00 throughout, vindicating the decision to
+drop std-normalisation given 89.5% of states have tied optima).
+
+Gameplay did not move. 246 held-out answers, decoder fixed, `sft` + `baseline`
+control reproducing **3.7642** exactly:
+
+| arm | mean | solved | fail |
+|---|---:|---:|---:|
+| `sft` | **3.7642** | 242/246 | 1.63% |
+| `sft_grpo` | 3.7602 | 241/246 | 2.03% |
+
+```
+diff -0.0041   paired t = -0.28   NOT significant
+better 7   worse 6   unchanged 233
+```
+
+**233 of 246 games were identical.** The change is 6% of the 0.0698 ceiling and
+inside noise. Hard-mode violations and forced-move rate did not move either.
+
+The run was executed twice — interactively and headless through the API — and
+the two adapters are **byte-identical**. The pipeline is deterministic.
+
+### The stop rule was tested, not assumed
+
+RUN.md pre-registered early-stopping on the paired rollout rather than on loss.
+The API re-run recovered the mid-training checkpoints, so all three were scored
+on the same 246 answers:
+
+| arm | mean | solved | vs `sft` | t | games changed |
+|---|---:|---:|---:|---:|---:|
+| `sft` (control) | **3.7642** | 242 | — | — | — |
+| `sft_grpo_150` | 3.7602 | 242 | −0.0041 | −0.38 | 7 |
+| `sft_grpo_300` | 3.7520 | 241 | −0.0122 | −0.90 | 11 |
+| `sft_grpo` (393) | 3.7602 | 241 | −0.0041 | −0.28 | 13 |
+
+None is significant. Step 300 has the lowest mean, but at t = −0.90 across
+three comparisons that is selection on noise, so it is reported and not
+adopted. The only real pattern is `games changed` rising 7 → 11 → 13 while the
+mean stays flat: the policy moves and buys nothing. **Outcome C holds for the
+whole trajectory, not just its endpoint.**
+
+### Two methods, opposite failure modes, one conclusion
+
+| | what happened | effect |
+|---|---|---:|
+| Phase 8 DPO | drifted from the SFT policy | **−0.1708** |
+| Phase 11 GRPO | stayed put | **+0.0041**, n.s. |
+
+The decision budget predicted both before either ran. Perfect restricted-regime
+action selection is worth 0.0698 guesses, and the model was already optimal in
+85.6% of those decisions — 83% of the remainder being ties it could not have got
+wrong. DPO had less upside than its own drift; GRPO had upside it could not
+find because there was almost none left.
+
+**The remaining 0.32 is not an action-selection problem.** It is the capability
+limit measured back in Phases 4–6: given a state with exactly one possible
+answer, the best model names it 20% of the time. Ranking cannot fix an
+inability to produce.
+
+### What this does not establish
+
+The unrestricted regime was trained against a **one-ply proxy** over a top-48
+menu, not the full vocabulary — so this run could teach the model to rank good
+turn-2 probes but not to avoid bad ones. "GRPO cannot help at turn 2" is not
+shown; only "this run did not".
+
+Design and pre-registered readings: [phase11_grpo/RUN.md](phase11_grpo/RUN.md).
+Results: `results/phase11/`.
+
+---
+
 # Where this leaves it
 
 The distillation worked and was not enough. The models reproduce their expert's
@@ -1322,6 +1534,27 @@ distilling it supplies thin endgame coverage — 1,612 of 7,173 rows sit at
 conflated the all-greens flag with endgame coverage and understated the real
 figure by two orders of magnitude. The conclusion survives — coverage is thin
 and skewed early — but the number was wrong and is corrected here.)
+
+**Phases 8–11 then established what the last 0.32 is not.** Two post-training
+methods were tried against it, with opposite failure modes and the same answer:
+DPO drifted and lost 0.1708; GRPO held its ground and gained 0.0041 (n.s.,
+233/246 games unchanged). Phase 11's decision budget explains both in advance —
+perfect action selection across the entire restricted regime is worth **0.0698
+guesses**, because the model is already optimal in 85.6% of those decisions and
+83% of the rest are ties it could not have got wrong.
+
+So the gap is not preference, not ranking, and not the prompt format either:
+Phase 10's crossover showed the `raw_history` penalty was mostly format lock-in,
+and that a model can reach 3.76-equivalent play without the constraint block —
+but only by leaning harder on the decoder, emitting **0% admissible words
+unaided** on its own format.
+
+What is left is the capability limit Phases 4–6 measured directly, and nothing
+since has moved it: given a state with exactly one possible answer, the best
+model names it 20% of the time. Better action selection cannot fix an inability
+to produce the right word, and three phases of trying is reasonable evidence
+that the next lever is a better model or better endgame coverage, not a better
+objective.
 
 ---
 

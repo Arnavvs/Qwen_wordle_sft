@@ -233,21 +233,52 @@ REQUIRED_FILES = [
     "artifacts/valid_guesses.txt",
 ]
 
+def _has(d):
+    try:
+        return all(os.path.exists(os.path.join(d, f)) for f in REQUIRED_FILES)
+    except OSError:
+        return False
+
 def find_data_root():
-    cands = ([DATASET_DIR] if DATASET_DIR else []) + sorted(
-        glob.glob("/kaggle/input/*/kaggle_upload")) + sorted(
-        glob.glob("/kaggle/input/*")) + ["."]
-    for root in cands:
-        if root and all(os.path.exists(os.path.join(root, f))
-                        for f in REQUIRED_FILES):
+    """Locate the dataset by searching for its marker files, not by guessing.
+
+    An earlier version globbed /kaggle/input/* and /kaggle/input/*/kaggle_upload,
+    which assumes the mount sits at a known depth. It does not: the first Phase
+    10 push found only /kaggle/input/datasets and failed, because the real tree
+    was nested deeper than either pattern reached. This is the same recursive
+    walk phase9_harness already uses against this dataset in production.
+    """
+    for root in ([DATASET_DIR] if DATASET_DIR else []) + ["/kaggle/input", "."]:
+        if not root or not os.path.isdir(root):
+            continue
+        if _has(root):
             return root
-    lines = ["could not locate the sft_package dataset. Looked in:"]
-    for root in cands:
-        if not root: continue
-        miss = [f for f in REQUIRED_FILES
-                if not os.path.exists(os.path.join(root, f))]
-        if miss and os.path.isdir(root):
-            lines.append(f"  {root}  (missing {len(miss)}, e.g. {miss[0]})")
+        for dp, dn, _ in os.walk(root):
+            dn[:] = [d for d in dn if not d.startswith(".")]
+            if _has(dp):
+                return dp
+    # Failed: print what is actually mounted, so one failed run is enough to
+    # diagnose the layout rather than needing another push to learn it.
+    lines = ["could not locate the sft_package dataset.",
+             "REQUIRED (all must be present under one root):"]
+    lines += ["    " + f for f in REQUIRED_FILES]
+    for base in ("/kaggle/input", "."):
+        lines.append(f"  actual tree under {base}:")
+        if not os.path.isdir(base):
+            lines.append("    <missing>")
+            continue
+        n = 0
+        for dp, dn, fn in os.walk(base):
+            dn[:] = [d for d in dn if not d.startswith(".")]
+            depth = dp.rstrip("/").count("/") - base.rstrip("/").count("/")
+            if depth > 3:
+                dn[:] = []
+                continue
+            lines.append(f"    {dp}/  ({len(dn)} dirs, {len(fn)} files)")
+            n += 1
+            if n > 60:
+                lines.append("    ... truncated")
+                break
     raise SystemExit("\n".join(lines))
 
 DATA_ROOT = find_data_root()

@@ -517,7 +517,13 @@ def cmd_runs(args):
 
 def cmd_data_push(args):
     cfg = load_profiles()
-    d = os.path.join(ROOT, cfg.get("dataset_dir", "uploads/kaggle_upload"))
+    # normpath matters on Windows: the profile stores a POSIX-style
+    # "uploads/kaggle_upload", and joining that onto a backslash ROOT yields a
+    # mixed-separator path. The Kaggle CLI derives an upload temp filename from
+    # it and mangles mixed separators, failing on any top-level .json with
+    # "No such file or directory: ...kaggle_upload_DATASET_MANIFEST.json.json".
+    d = os.path.normpath(os.path.join(ROOT, cfg.get("dataset_dir",
+                                                    "uploads/kaggle_upload")))
     if not os.path.isdir(d):
         die("dataset dir not found: " + d
             + ". Build it with: python tools/prepare_kaggle_dataset.py")

@@ -19,6 +19,15 @@ were re-executed on different machines and produced **byte-identical** weights.
 
 ---
 
+## Play it
+
+**[Play the benchmark →](https://claude.ai/code/artifact/256bfce4-e519-4f56-bd4a-047bc7c3a9a7)**
+
+Twenty real games from the held-out set. Play them yourself and see where you
+land against every solver here, or skip the playing and replay any solver's
+game guess by guess. Built by `phase12_demo/`; the model rows are the exact
+per-game records the paired tests used.
+
 ## The result
 
 | | mean guesses | solved / 246 | failure |
@@ -165,6 +174,7 @@ phase8_dpo_v3/           audited DPO rebuild + the audit that cancelled it
 phase9_harness/          the prompt-format harness = the measurement path
 phase10_crossover/       the format crossover
 phase11_grpo/            decision budget, GRPO tasks, GRPO run
+phase12_demo/            the playable benchmark page
 docs/                    MATH.md (every formula, worked), run guides
 tools/                   Kaggle packaging + API run driver
 results/                 the experimental record, as JSON
